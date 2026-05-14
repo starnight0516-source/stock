@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .custom-scrollbar::-webkit-scrollbar { height: 8px; width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
@@ -18,107 +18,109 @@
         @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: white !important; }
             .custom-scrollbar::-webkit-scrollbar { display: none; }
-            @page { margin: 1.5cm; size: A4 landscape; }
+            .print-hide { display: none !important; }
+            .print-show { display: block !important; }
+            @page { margin: 1cm; size: A4 landscape; }
         }
     </style>
 </head>
-<body class="text-slate-800 p-2 sm:p-4 md:p-8 antialiased selection:bg-indigo-100 selection:text-indigo-900 print:p-0 print:bg-white">
+<body class="text-slate-800 p-2 sm:p-4 md:p-6 antialiased selection:bg-indigo-100 selection:text-indigo-900 print:p-0 print:bg-white">
     <div class="max-w-7xl mx-auto space-y-4 sm:space-y-6 print:space-y-0 print:max-w-none">
         
         <!-- Header -->
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-3 sm:gap-4 print:hidden">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-4 print-hide mb-2">
             <div>
                 <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">台股交易紀錄與盈虧計算機</h1>
-                <p class="text-xs sm:text-sm text-slate-500 mt-1 font-bold">專為新光證券優化 ｜ 支援即時股價估算 ｜ 批次賣出追蹤</p>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1 font-bold">專為新光證券優化 ｜ 支援即時股價估算 ｜ 全自動雲端同步</p>
             </div>
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
-                <div class="flex items-center bg-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-sm border border-slate-200 justify-between md:justify-start">
-                    <label class="text-sm font-bold text-slate-700 mr-2 sm:mr-3">手續費折讓</label>
+                <div class="flex items-center bg-white px-3 py-2 rounded-xl shadow-sm border border-slate-200 justify-between sm:justify-start">
+                    <label class="text-sm font-bold text-slate-700 mr-2">手續費折讓</label>
                     <div class="flex items-center gap-1.5">
-                        <input type="number" id="discount-rate" value="0.28" step="0.01" min="0.01" max="1" class="w-16 sm:w-20 px-2 py-1 text-sm sm:text-base font-black border border-slate-300 rounded-lg bg-slate-50 text-center focus:ring-2 focus:ring-indigo-500 outline-none shadow-inner">
+                        <input type="number" id="discount-rate" value="0.28" step="0.01" min="0.01" max="1" class="w-16 px-2 py-1 text-sm font-black border border-slate-300 rounded-lg bg-slate-50 text-center focus:ring-2 focus:ring-indigo-500 outline-none shadow-inner">
                         <span class="text-sm font-bold text-slate-500">折</span>
                     </div>
                 </div>
-                <button onclick="openSyncModal()" class="justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-black shadow-sm transition-colors flex items-center gap-1.5 whitespace-nowrap">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
-                    雲端同步
+                <button onclick="openSyncModal()" class="justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-sm font-black shadow-sm transition-colors flex items-center gap-1.5 whitespace-nowrap">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                    ☁️ 雲端同步
                 </button>
             </div>
         </header>
 
         <!-- Tabs Navigation -->
-        <div class="flex justify-start sm:justify-center mb-4 sm:mb-8 print:hidden overflow-x-auto custom-scrollbar pb-1">
-            <div class="bg-slate-200/80 p-1 sm:p-1.5 rounded-xl flex shadow-inner min-w-max border border-slate-300">
-                <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-black transition-all whitespace-nowrap bg-slate-800 text-white shadow-md">
+        <div class="flex justify-start md:justify-center mb-4 print-hide overflow-x-auto custom-scrollbar pb-1">
+            <div class="bg-slate-200 p-1 rounded-xl flex shadow-inner min-w-max border border-slate-300">
+                <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="px-5 py-2 rounded-lg text-sm font-black transition-all whitespace-nowrap bg-slate-800 text-white shadow-md">
                     概況與輸入
                 </button>
-                <button onclick="switchTab('inventory')" id="tab-btn-inventory" class="px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900 hover:bg-slate-300/50">
+                <button onclick="switchTab('inventory')" id="tab-btn-inventory" class="px-5 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900 hover:bg-slate-300/50">
                     庫存與即時盈虧
                 </button>
-                <button onclick="switchTab('history')" id="tab-btn-history" class="px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900 hover:bg-slate-300/50">
+                <button onclick="switchTab('history')" id="tab-btn-history" class="px-5 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900 hover:bg-slate-300/50">
                     完整交易明細
                 </button>
             </div>
         </div>
 
         <!-- Tab 1: Dashboard -->
-        <div id="tab-dashboard" class="tab-content active space-y-4 sm:space-y-6">
+        <div id="tab-dashboard" class="tab-content active space-y-4">
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h3 class="text-[10px] sm:text-xs font-black text-slate-500 uppercase tracking-wider mb-1">總投入成本</h3>
-                    <p class="text-xl sm:text-3xl font-black text-slate-900 truncate" id="summary-cost">$0</p>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-wider mb-1">總投入成本</h3>
+                    <p class="text-2xl font-black text-slate-900 truncate" id="summary-cost">$0</p>
                 </div>
-                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h3 class="text-[10px] sm:text-xs font-black text-slate-500 uppercase tracking-wider mb-1">累計已實現</h3>
-                    <p class="text-xl sm:text-3xl font-black text-slate-900 truncate" id="summary-realized">$0</p>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-wider mb-1">累計已實現</h3>
+                    <p class="text-2xl font-black text-slate-900 truncate" id="summary-realized">$0</p>
                 </div>
-                <div class="bg-indigo-50/50 p-4 sm:p-6 rounded-2xl shadow-sm border border-indigo-200 relative col-span-2 lg:col-span-1">
-                    <h3 class="text-[10px] sm:text-xs font-black text-indigo-800 uppercase tracking-wider mb-1">預估未實現損益</h3>
-                    <p class="text-2xl sm:text-3xl font-black text-slate-900 truncate" id="summary-unrealized">$0</p>
+                <div class="bg-slate-50 p-4 rounded-2xl shadow-sm border border-slate-200 col-span-2 lg:col-span-1">
+                    <h3 class="text-xs font-black text-slate-600 uppercase tracking-wider mb-1">預估未實現損益</h3>
+                    <p class="text-3xl font-black text-slate-900 truncate" id="summary-unrealized">$0</p>
                 </div>
-                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 hidden lg:block">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 hidden lg:block">
                     <h3 class="text-xs font-black text-slate-500 uppercase tracking-wider mb-1">總交易筆數</h3>
-                    <p class="text-3xl font-black text-slate-900" id="summary-count">0 筆</p>
+                    <p class="text-2xl font-black text-slate-900" id="summary-count">0 筆</p>
                 </div>
             </div>
 
-            <div class="bg-white p-5 sm:p-8 rounded-2xl shadow-sm border border-slate-200 max-w-4xl mx-auto mt-4 sm:mt-8">
-                <div class="flex items-center gap-2 mb-4 sm:mb-6 border-b border-slate-100 pb-3 sm:pb-4">
-                    <div class="bg-indigo-600 p-1.5 sm:p-2 rounded-lg text-white">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 max-w-4xl mx-auto">
+                <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
+                    <div class="bg-slate-800 p-1.5 rounded-lg text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     </div>
-                    <h2 class="text-lg sm:text-xl font-black text-slate-800">新增交易紀錄</h2>
+                    <h2 class="text-lg font-black text-slate-800">新增交易紀錄</h2>
                 </div>
-                <form id="transaction-form" class="space-y-4 sm:space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 sm:gap-5">
+                <form id="transaction-form" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                         <div class="md:col-span-1">
-                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">交易日期</label>
-                            <input type="date" id="date" required class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-semibold shadow-inner text-sm sm:text-base">
+                            <label class="block text-sm font-bold text-slate-700 mb-1.5">交易日期</label>
+                            <input type="date" id="date" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-800 font-semibold shadow-inner text-sm">
+                        </div>
+                        <div class="md:col-span-2 relative">
+                            <label class="block text-sm font-bold text-slate-700 mb-1.5">股票代號</label>
+                            <input type="text" id="stock" required autocomplete="off" placeholder="輸入代號自動補齊名稱 (如: 2330)" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-800 font-bold text-slate-900 shadow-inner text-sm">
+                            <ul id="stock-autocomplete" class="hidden absolute z-50 w-full bg-white border border-slate-200 mt-1 rounded-xl shadow-lg max-h-48 overflow-y-auto custom-scrollbar"></ul>
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">股票代號/名稱</label>
-                            <input type="text" id="stock" required list="stock-list" autocomplete="off" placeholder="打代號自動補名稱" class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-bold text-slate-900 shadow-inner text-sm sm:text-base">
-                            <datalist id="stock-list"></datalist>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">買進 / 賣出</label>
-                            <select id="type" class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-black shadow-inner text-sm sm:text-base">
-                                <option value="buy" class="text-blue-700">買進 (Buy)</option>
-                                <option value="sell" class="text-orange-700">賣出 (Sell)</option>
+                            <label class="block text-sm font-bold text-slate-700 mb-1.5">買進 / 賣出</label>
+                            <select id="type" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-800 font-black shadow-inner text-sm">
+                                <option value="buy" class="text-blue-700 font-bold">買進 (Buy)</option>
+                                <option value="sell" class="text-orange-700 font-bold">賣出 (Sell)</option>
                             </select>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 sm:gap-5">
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">單價</label>
-                            <input type="number" id="price" required step="0.01" min="0.01" placeholder="1050" class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-black text-lg sm:text-xl shadow-inner text-right">
+                            <label class="block text-sm font-bold text-slate-700 mb-1.5">成交單價</label>
+                            <input type="number" id="price" required step="0.01" min="0.01" placeholder="1050" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-800 font-black text-lg shadow-inner text-right">
                         </div>
                         <div>
-                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">股數</label>
-                            <input type="number" id="shares" required min="1" placeholder="1000" class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-black text-lg sm:text-xl shadow-inner text-right">
+                            <label class="block text-sm font-bold text-slate-700 mb-1.5">成交股數 (整股打1000)</label>
+                            <input type="number" id="shares" required min="1" placeholder="1000" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-800 font-black text-lg shadow-inner text-right">
                         </div>
                     </div>
-                    <button type="submit" class="w-full bg-slate-900 hover:bg-indigo-600 text-white font-black py-3 sm:py-4 rounded-xl transition-all mt-2 text-base sm:text-lg shadow-lg">
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-3 rounded-xl transition-all shadow-md text-base mt-2">
                         確認新增
                     </button>
                 </form>
@@ -128,20 +130,22 @@
         <!-- Tab 2: Inventory -->
         <div id="tab-inventory" class="tab-content">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="px-4 sm:px-6 py-3 border-b border-slate-200 bg-white"><h2 class="text-lg sm:text-xl font-black text-slate-800">目前庫存與即時未實現損益</h2></div>
-                <div class="px-4 sm:px-6 py-2.5 bg-slate-50 border-b border-slate-200 text-xs sm:text-sm text-slate-700 font-bold flex gap-2"><svg class="w-4 h-4 text-indigo-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>點擊「即時股價」欄位的數字即可更新報價，系統會自動預扣賣出稅費。</span></div>
+                <div class="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="text-sm text-slate-700 font-bold">點擊「即時股價」欄位的數字更新報價，系統會自動預扣賣出稅費計算最真實的盈虧。</span>
+                </div>
                 <div class="overflow-x-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
                     <table class="w-full text-left border-collapse min-w-[800px]">
                         <thead class="bg-slate-800 text-white">
-                            <tr class="text-[12px] sm:text-[14px] font-bold tracking-wider">
-                                <th class="px-3 py-3 w-[15%]">股票</th>
-                                <th class="px-3 py-3 text-right">剩餘股數</th>
-                                <th class="px-3 py-3 text-right">平均成本</th>
-                                <th class="px-3 py-3 text-right">總投入成本</th>
-                                <th class="px-3 py-3 text-center">即時股價 ✏️</th>
-                                <th class="px-3 py-3 text-right">預估現值 (扣稅費)</th>
-                                <th class="px-3 py-3 text-right">未實現損益</th>
-                                <th class="px-3 py-3 text-right">報酬率</th>
+                            <tr class="text-sm font-bold tracking-wider">
+                                <th class="px-4 py-3">股票</th>
+                                <th class="px-4 py-3 text-right">剩餘股數</th>
+                                <th class="px-4 py-3 text-right">平均成本</th>
+                                <th class="px-4 py-3 text-right">總投入成本</th>
+                                <th class="px-4 py-3 text-center">即時股價 ✏️</th>
+                                <th class="px-4 py-3 text-right">預估現值 (扣稅費)</th>
+                                <th class="px-4 py-3 text-right">預估未實現損益</th>
+                                <th class="px-4 py-3 text-right">報酬率</th>
                             </tr>
                         </thead>
                         <tbody id="inventory-list" class="divide-y divide-slate-200"></tbody>
@@ -153,140 +157,171 @@
         <!-- Tab 3: History -->
         <div id="tab-history" class="tab-content">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col h-[82vh] print:h-auto print:border-none print:shadow-none overflow-hidden">
-                <div class="px-4 py-3 border-b border-slate-200 flex flex-wrap justify-between items-center bg-white gap-3 print:hidden">
+                <!-- Toolbar -->
+                <div class="px-4 py-2 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white gap-3 print-hide">
                     <h2 class="text-lg font-black text-slate-800">完整交易明細與策略追蹤</h2>
                     <div class="flex gap-2 flex-wrap w-full sm:w-auto">
                         <input type="file" id="import-file" accept=".csv" class="hidden">
-                        <button id="btn-import" class="flex-1 sm:flex-none text-xs text-slate-700 bg-white border-2 px-2 py-1.5 rounded-lg font-bold">匯入 CSV</button>
-                        <button id="btn-export" class="flex-1 sm:flex-none text-xs text-slate-700 bg-white border-2 px-2 py-1.5 rounded-lg font-bold">匯出 CSV</button>
-                        <button id="btn-print-pdf" class="flex-1 sm:flex-none text-xs text-purple-700 bg-purple-50 border-2 border-purple-200 px-2 py-1.5 rounded-lg font-bold">輸出 PDF</button>
-                        <button id="btn-clear-all" class="flex-1 sm:flex-none text-xs text-red-600 bg-red-50 border-2 border-red-200 px-2 py-1.5 rounded-lg font-bold">清空紀錄</button>
+                        <button id="btn-import" class="flex-1 sm:flex-none text-xs text-slate-700 bg-white border-2 border-slate-200 hover:bg-slate-50 px-3 py-1.5 rounded-lg font-bold">匯入 CSV</button>
+                        <button id="btn-export" class="flex-1 sm:flex-none text-xs text-slate-700 bg-white border-2 border-slate-200 hover:bg-slate-50 px-3 py-1.5 rounded-lg font-bold">匯出 CSV</button>
+                        <button id="btn-print-pdf" class="flex-1 sm:flex-none text-xs text-indigo-700 bg-indigo-50 border-2 border-indigo-200 hover:bg-indigo-100 px-3 py-1.5 rounded-lg font-bold">輸出 PDF</button>
+                        <button id="btn-clear-all" class="flex-1 sm:flex-none text-xs text-red-600 bg-red-50 border-2 border-red-200 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold">清空紀錄</button>
                     </div>
                 </div>
                 
-                <div class="px-4 py-2 border-b border-slate-200 bg-slate-50 flex gap-4 items-center print:hidden overflow-x-auto">
-                    <div class="flex items-center gap-2 whitespace-nowrap">
+                <!-- Filters -->
+                <div class="px-4 py-2 border-b border-slate-200 bg-slate-50 flex flex-wrap gap-4 items-center print-hide">
+                    <div class="flex items-center gap-2">
                         <label class="text-xs font-black text-slate-700">篩選股票</label>
-                        <select id="filter-stock" onchange="render()" class="text-xs font-bold border-2 rounded-lg px-2 py-1 outline-none"><option value="all">全部股票</option></select>
+                        <select id="filter-stock" onchange="render()" class="text-xs font-bold border-2 border-slate-300 rounded-lg px-2 py-1 outline-none focus:border-slate-800"><option value="all">全部股票</option></select>
                     </div>
-                    <div class="flex items-center gap-2 whitespace-nowrap">
+                    <div class="flex items-center gap-2">
                         <label class="text-xs font-black text-slate-700">交易類別</label>
-                        <select id="filter-type" onchange="render()" class="text-xs font-bold border-2 rounded-lg px-2 py-1 outline-none">
+                        <select id="filter-type" onchange="render()" class="text-xs font-bold border-2 border-slate-300 rounded-lg px-2 py-1 outline-none focus:border-slate-800">
                             <option value="all">全部交易</option><option value="buy">僅顯示買進</option><option value="sell">僅顯示賣出</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="hidden print:block text-center py-4 mb-2 border-b-2 border-slate-800">
+                <!-- Print Header -->
+                <div class="hidden print-show text-center py-4 mb-2 border-b-2 border-slate-800">
                     <h1 class="text-3xl font-black text-slate-900 mb-1">台股交易明細對帳單</h1>
                     <p class="text-slate-600 font-bold" id="print-date-range">產生日期：...</p>
                 </div>
 
-                <div id="stats-bar" class="px-4 py-2 bg-indigo-50 border-b border-indigo-100 flex flex-wrap gap-4 text-xs font-black text-slate-800 shadow-inner">
-                    <div class="flex items-center gap-1.5 text-indigo-800">顯示筆數 <span id="stat-count" class="bg-white px-2 py-0.5 rounded border border-indigo-200 text-indigo-700">0</span></div>
-                    <div id="stat-buy-wrapper" class="flex items-center gap-1.5 text-slate-500">買進總額 <span id="stat-buy-total" class="bg-white px-2 py-0.5 rounded border border-slate-200">0</span></div>
-                    <div id="stat-sell-wrapper" class="flex items-center gap-1.5 text-slate-500">賣出總額 <span id="stat-sell-total" class="bg-white px-2 py-0.5 rounded border border-slate-200">0</span></div>
-                    <div id="stat-pnl-wrapper" class="flex items-center gap-1.5 text-indigo-800">此列表總盈虧 <span id="stat-total-pnl" class="bg-white px-2 py-0.5 rounded border border-indigo-200 text-base">0</span></div>
+                <!-- Stats Bar -->
+                <div id="stats-bar" class="px-4 py-2 bg-slate-100 border-b border-slate-200 flex flex-wrap gap-4 text-xs font-black text-slate-800 shadow-inner">
+                    <div class="flex items-center gap-1.5 text-slate-600">顯示筆數 <span id="stat-count" class="bg-white px-2 py-0.5 rounded border border-slate-300 text-slate-800">0</span></div>
+                    <div id="stat-buy-wrapper" class="flex items-center gap-1.5 text-slate-600">買進總額 <span id="stat-buy-total" class="bg-white px-2 py-0.5 rounded border border-slate-300 text-slate-800">0</span></div>
+                    <div id="stat-sell-wrapper" class="flex items-center gap-1.5 text-slate-600">賣出總額 <span id="stat-sell-total" class="bg-white px-2 py-0.5 rounded border border-slate-300 text-slate-800">0</span></div>
+                    <div id="stat-pnl-wrapper" class="flex items-center gap-1.5 text-slate-800">此列表總盈虧 <span id="stat-total-pnl" class="bg-white px-2 py-0.5 rounded border text-base">0</span></div>
                 </div>
 
-                <div class="overflow-x-auto custom-scrollbar flex-1 pb-2 print:overflow-visible" style="-webkit-overflow-scrolling: touch;">
+                <!-- History Table -->
+                <div class="overflow-x-auto custom-scrollbar flex-1 print:overflow-visible" style="-webkit-overflow-scrolling: touch;">
                     <table class="w-full text-left border-collapse min-w-[850px] print:min-w-full">
                         <thead class="sticky top-0 bg-slate-800 text-white z-10 print:static print:bg-slate-200 print:text-slate-900">
-                            <tr class="text-[13px] font-bold tracking-wider border-b">
-                                <th class="px-3 py-2 w-[10%]">日期</th>
-                                <th class="px-3 py-2 w-[15%]">股票</th>
-                                <th class="px-3 py-2 text-center w-[8%]">類別</th>
-                                <th class="px-3 py-2 text-right w-[20%]">單價 / 股數</th>
-                                <th class="px-3 py-2 text-right w-[12%]">手續費 / 稅</th>
-                                <th class="px-3 py-2 text-right w-[20%]">淨收付金額 (損益)</th>
-                                <th class="px-3 py-2 text-center w-[15%] print:hidden">操作</th>
+                            <tr class="text-[13px] font-bold tracking-wider border-b border-slate-700 print:border-slate-400">
+                                <th class="px-3 py-2.5 w-[10%]">日期</th>
+                                <th class="px-3 py-2.5 w-[15%]">股票</th>
+                                <th class="px-3 py-2.5 text-center w-[8%]">類別</th>
+                                <th class="px-3 py-2.5 text-right w-[15%]">單價 / 股數</th>
+                                <th class="px-3 py-2.5 text-right w-[12%]">手續費 / 稅</th>
+                                <th class="px-3 py-2.5 text-right w-[20%]">淨收付金額 (損益)</th>
+                                <th class="px-3 py-2.5 text-center w-[15%] print-hide">操作</th>
                             </tr>
                         </thead>
-                        <tbody id="transaction-list" class="divide-y divide-slate-100 print:divide-slate-300"></tbody>
+                        <tbody id="transaction-list" class="divide-y divide-slate-200"></tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 一般確認 Modal -->
-    <div id="confirm-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[60] p-4 transition-opacity print:hidden">
+    <!-- 自動同步小提示 (Toast) -->
+    <div id="sync-toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-5 py-2.5 rounded-full shadow-2xl text-sm font-black transition-all duration-300 opacity-0 translate-y-10 pointer-events-none z-50 flex items-center gap-2 border border-slate-700">
+        <span id="toast-icon">☁️</span>
+        <span id="toast-text">資料同步中...</span>
+    </div>
+
+    <!-- 確認 Modal -->
+    <div id="confirm-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[60] p-4 print-hide">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden text-center">
             <div class="p-6">
-                <h3 class="text-xl font-black text-slate-900 mb-2" id="modal-title">確認操作</h3>
-                <p class="text-sm text-slate-500 font-medium whitespace-pre-wrap" id="modal-message">確定要執行此操作嗎？</p>
+                <h3 class="text-xl font-black text-slate-900 mb-2" id="modal-title">標題</h3>
+                <p class="text-sm text-slate-500 font-medium whitespace-pre-wrap" id="modal-message">訊息</p>
             </div>
             <div class="px-6 py-4 bg-slate-50 flex gap-3 border-t">
-                <button id="modal-cancel" class="px-4 py-2.5 bg-white border-2 text-slate-700 rounded-xl font-bold w-full">取消</button>
-                <button id="modal-confirm" class="px-4 py-2.5 bg-red-600 text-white rounded-xl font-black w-full">確定</button>
+                <button id="modal-cancel" class="px-4 py-2.5 bg-white border-2 text-slate-700 rounded-xl font-bold w-full hidden">取消</button>
+                <button id="modal-confirm" class="px-4 py-2.5 bg-blue-600 text-white rounded-xl font-black w-full">我知道了</button>
             </div>
         </div>
     </div>
 
-    <!-- ☁️ 雲端同步 Modal -->
-    <div id="sync-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity print:hidden">
+    <!-- ☁️ 雲端同步與 QRCode 魔法 Modal -->
+    <div id="sync-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 print-hide">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[90vh]">
             <div class="p-5 sm:p-6 overflow-y-auto custom-scrollbar">
                 <h3 class="text-xl font-black text-slate-900 mb-2 flex items-center gap-2">
                     <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
-                    GitHub 雲端同步
+                    自動雲端同步與手機連線
                 </h3>
-                <p class="text-xs sm:text-sm text-slate-500 mb-5 font-bold leading-relaxed">
-                    透過你專屬的 GitHub 金鑰，在電腦與手機間一鍵互傳資料！告別傳送 CSV 的麻煩，資料 100% 安全隱密。
+                <p class="text-[13px] text-slate-500 mb-4 font-bold leading-relaxed">
+                    只要在電腦上貼上一次 Token 並按上傳，就會出現 QRCode。<br><span class="text-indigo-600">手機掃描後，未來只要一開啟網頁，資料就會在背景「全自動」雙向同步！</span>
                 </p>
                 
-                <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200 mb-5">
+                <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200 mb-4">
                     <div>
-                        <label class="block text-xs font-black text-slate-700 mb-1">1. GitHub Token (需勾選 gist 權限)</label>
+                        <label class="block text-xs font-black text-slate-700 mb-1">1. GitHub Token (電腦端輸入一次即可)</label>
                         <input type="password" id="sync-token" placeholder="ghp_xxxxxxxxxxxx" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-mono">
-                        <a href="https://github.com/settings/tokens/new?scopes=gist&description=StockAppSync" target="_blank" class="text-[10px] text-indigo-600 hover:underline mt-1 inline-block font-bold">👉 點我產生免費 Token</a>
+                        <a href="https://github.com/settings/tokens/new?scopes=gist&description=StockAppSync" target="_blank" class="text-[11px] text-indigo-600 hover:underline mt-1 inline-block font-bold">👉 點我產生免費 Token (需勾選 gist 權限)</a>
                     </div>
-                    <div>
-                        <label class="block text-xs font-black text-slate-700 mb-1">2. 資料庫 Gist ID (跨裝置同步密碼)</label>
-                        <input type="text" id="sync-gist-id" placeholder="第一台裝置請留白，上傳後會自動產生" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-mono">
-                        <p class="text-[10px] text-slate-500 mt-1 font-bold">第一台裝置請直接按「上傳」。換到第二台裝置時，請把相同的 Token 跟自動產生的 ID 填入此處再按「下載」。</p>
+                    <div class="hidden">
+                        <input type="text" id="sync-gist-id">
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-3">
-                    <button id="btn-sync-up" class="flex flex-col items-center justify-center bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 text-blue-700 rounded-xl p-3 sm:p-4 transition-all">
-                        <svg class="w-6 h-6 sm:w-8 sm:h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                        <span class="text-sm font-black">上傳至雲端</span>
-                        <span class="text-[10px] font-bold text-blue-500 mt-0.5">電腦備份專用</span>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <button id="btn-sync-up" class="flex flex-col items-center justify-center bg-indigo-50 hover:bg-indigo-100 border-2 border-indigo-200 text-indigo-700 rounded-xl p-3 transition-all">
+                        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        <span class="text-sm font-black">首次上傳</span>
+                        <span class="text-[10px] font-bold text-indigo-500 mt-0.5">上傳並產生手機條碼</span>
                     </button>
-                    <button id="btn-sync-down" class="flex flex-col items-center justify-center bg-green-50 hover:bg-green-100 border-2 border-green-200 text-green-700 rounded-xl p-3 sm:p-4 transition-all">
-                        <svg class="w-6 h-6 sm:w-8 sm:h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        <span class="text-sm font-black">從雲端下載</span>
-                        <span class="text-[10px] font-bold text-green-500 mt-0.5">手機同步專用</span>
+                    <button id="btn-sync-down" class="flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 border-2 border-slate-200 text-slate-700 rounded-xl p-3 transition-all">
+                        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span class="text-sm font-black">強制下載</span>
+                        <span class="text-[10px] font-bold text-slate-500 mt-0.5">強制覆蓋本地資料</span>
                     </button>
                 </div>
+
+                <!-- QRCode 顯示區 -->
+                <div id="qr-container" class="hidden flex flex-col items-center justify-center p-4 bg-white border-2 border-indigo-100 rounded-xl">
+                    <p class="text-sm font-black text-indigo-700 mb-2">📱 拿起手機掃描完成自動連線！</p>
+                    <img id="qr-image" src="" alt="Sync QR Code" class="w-40 h-40 rounded shadow-sm">
+                    <p class="text-[10px] text-slate-400 mt-2 font-bold text-center">請使用手機內建相機掃描。<br>掃描後即完成設定，未來將全自動同步。</p>
+                </div>
             </div>
-            <div class="px-5 sm:px-6 py-3 bg-slate-100 border-t border-slate-200 flex justify-end">
-                <button onclick="closeSyncModal()" class="px-6 py-2 bg-white border-2 border-slate-300 text-slate-700 rounded-xl font-black text-sm w-full sm:w-auto">關閉視窗</button>
+            <div class="px-5 py-3 bg-slate-100 border-t border-slate-200 flex justify-end">
+                <button onclick="closeSyncModal()" class="px-6 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl font-black text-sm w-full sm:w-auto shadow-sm">關閉視窗</button>
             </div>
         </div>
     </div>
 
     <script>
-        let transactions = JSON.parse(localStorage.getItem('stockTransactions')) || [];
-        let livePrices = JSON.parse(localStorage.getItem('stockLivePrices')) || {};
-        const stockDict = {"2330":"台積電","2317":"鴻海","2454":"聯發科","2308":"台達電","2382":"廣達","2881":"富邦金","2882":"國泰金","2891":"中信金","2886":"兆豐金","3231":"緯創","2379":"瑞昱","3711":"日月光投控","3008":"大立光","2603":"長榮","2884":"玉山金","1301":"台塑","2357":"華碩","0050":"元大台灣50","0056":"元大高股息","00878":"國泰永續高股息","00919":"群益台灣精選高息","00929":"復華台灣科技優息"};
+        let transactions = [];
+        let livePrices = {};
+        let isBackgroundSyncing = false;
         
-        const formatMoney = (num) => new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0 }).format(num);
+        try {
+            transactions = JSON.parse(localStorage.getItem('stockTransactions')) || [];
+            livePrices = JSON.parse(localStorage.getItem('stockLivePrices')) || {};
+        } catch (e) {
+            console.error("Local storage parsing error, resetting to empty array.");
+            transactions = [];
+            livePrices = {};
+        }
+
+        const stockDict = {
+            "2330":"台積電","2317":"鴻海","2454":"聯發科","2308":"台達電","2382":"廣達",
+            "2881":"富邦金","2882":"國泰金","2891":"中信金","2886":"兆豐金","3231":"緯創",
+            "2379":"瑞昱","3711":"日月光投控","3008":"大立光","2603":"長榮","2884":"玉山金",
+            "1301":"台塑","2357":"華碩","0050":"元大台灣50","0056":"元大高股息",
+            "00878":"國泰永續高股息","00919":"群益台灣精選高息","00929":"復華台灣科技優息"
+        };
+        
+        const formatMoney = (num) => new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0 }).format(Math.round(num));
         const formatPercent = (num) => (num > 0 ? '+' : '') + (num * 100).toFixed(2) + '%';
         
-        // 上下分行不斷行排版
-        const formatStockDisplayResponsive = (stockString) => {
-            const spaceIdx = stockString.indexOf(' ');
-            if (spaceIdx > -1) {
-                const code = stockString.substring(0, spaceIdx);
-                const name = stockString.substring(spaceIdx + 1);
-                return `<div class="whitespace-nowrap"><div class="font-black text-slate-900 text-lg">${code}</div><div class="text-[13px] text-slate-500 font-bold mt-0.5">${name}</div></div>`;
+        const formatStockSplit = (stockString) => {
+            const parts = stockString.trim().split(/\s+/);
+            if (parts.length >= 2) {
+                const code = parts[0];
+                const name = parts.slice(1).join(' ');
+                return `<div class="whitespace-nowrap"><div class="font-black text-slate-900 text-base sm:text-lg leading-tight">${code}</div><div class="text-[12px] sm:text-[13px] text-slate-500 font-bold mt-0.5">${name}</div></div>`;
             }
-            return `<div class="whitespace-nowrap font-black text-slate-900 text-lg">${stockString}</div>`;
+            return `<div class="whitespace-nowrap font-black text-slate-900 text-base sm:text-lg">${stockString}</div>`;
         };
 
-        // Modal 系統
         const modal = document.getElementById('confirm-modal');
         let confirmAction = null;
         function showModal(title, message, onConfirm = null) {
@@ -298,11 +333,11 @@
             if (onConfirm === null) {
                 cancelBtn.classList.add('hidden');
                 confirmBtn.textContent = '我知道了';
-                confirmBtn.className = "px-4 py-2.5 bg-blue-600 text-white rounded-xl font-black w-full";
+                confirmBtn.className = "px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black w-full transition-colors";
             } else {
                 cancelBtn.classList.remove('hidden');
                 confirmBtn.textContent = '確定執行';
-                confirmBtn.className = "px-4 py-2.5 bg-red-600 text-white rounded-xl font-black w-full";
+                confirmBtn.className = "px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black w-full transition-colors";
             }
             modal.classList.remove('hidden');
         }
@@ -311,32 +346,58 @@
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('[id^="tab-btn-"]').forEach(btn => btn.className = "px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900 hover:bg-slate-300/50");
+            document.querySelectorAll('[id^="tab-btn-"]').forEach(btn => btn.className = "px-5 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900 hover:bg-slate-300/50");
             document.getElementById(`tab-${tabId}`).classList.add('active');
-            document.getElementById(`tab-btn-${tabId}`).className = "px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-black transition-all whitespace-nowrap bg-slate-800 text-white shadow-md";
+            document.getElementById(`tab-btn-${tabId}`).className = "px-5 py-2 rounded-lg text-sm font-black transition-all whitespace-nowrap bg-slate-800 text-white shadow-md";
         }
 
         document.getElementById('date').valueAsDate = new Date();
-        const stockInput = document.getElementById('stock');
-        const datalist = document.getElementById('stock-list');
-        for (const [code, name] of Object.entries(stockDict)) { datalist.appendChild(new Option(`${code} ${name}`)); }
         
-        function processStockInput() {
+        const stockInput = document.getElementById('stock');
+        const autocompleteList = document.getElementById('stock-autocomplete');
+        
+        stockInput.addEventListener('input', function() {
+            const val = this.value.trim().toLowerCase();
+            autocompleteList.innerHTML = '';
+            if (!val) { autocompleteList.classList.add('hidden'); return; }
+            
+            let matches = Object.entries(stockDict).filter(([code, name]) => code.startsWith(val) || name.toLowerCase().includes(val));
+            if (matches.length > 0) {
+                matches.forEach(([code, name]) => {
+                    const li = document.createElement('li');
+                    li.className = "px-4 py-2 hover:bg-slate-100 cursor-pointer font-bold text-sm text-slate-700 border-b border-slate-50 last:border-0";
+                    li.textContent = `${code} ${name}`;
+                    li.onclick = () => { stockInput.value = `${code} ${name}`; autocompleteList.classList.add('hidden'); };
+                    autocompleteList.appendChild(li);
+                });
+                autocompleteList.classList.remove('hidden');
+            } else {
+                autocompleteList.classList.add('hidden');
+            }
+        });
+
+        function formatStockInput() {
+            setTimeout(() => { autocompleteList.classList.add('hidden'); }, 200);
             let val = stockInput.value.trim();
             if(!val) return;
-            if (/^\d+$/.test(val) && stockDict[val]) stockInput.value = `${val} ${stockDict[val]}`;
+            if (/^\d+$/.test(val) && stockDict[val]) {
+                stockInput.value = `${val} ${stockDict[val]}`;
+            } 
             else if (!/\d/.test(val)) {
                 for (const [code, name] of Object.entries(stockDict)) {
                     if (name.includes(val)) { stockInput.value = `${code} ${name}`; break; }
                 }
-            } else if (/^\d+[^\s\d]/.test(val)) stockInput.value = val.replace(/^(\d+)(.*)/, '$1 $2');
+            }
+            else if (/^\d+[^\s\d]/.test(val)) {
+                stockInput.value = val.replace(/^(\d+)(.*)/, '$1 $2');
+            }
         }
-        stockInput.addEventListener('blur', processStockInput);
-        stockInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') { e.preventDefault(); processStockInput(); }});
+        stockInput.addEventListener('blur', formatStockInput);
+        stockInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') formatStockInput(); });
 
         document.getElementById('transaction-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            processStockInput();
+            formatStockInput();
             const date = document.getElementById('date').value;
             const stock = document.getElementById('stock').value.trim();
             const type = document.getElementById('type').value;
@@ -345,27 +406,140 @@
             let discount = parseFloat(document.getElementById('discount-rate').value) || 0.28;
             
             let rawFee = price * shares * 0.001425 * discount;
-            let fee = shares < 1000 ? Math.max(1, Math.floor(rawFee)) : Math.max(20, Math.floor(rawFee)); // 新光1元邏輯
+            let minFee = shares < 1000 ? 1 : 20;
+            let fee = Math.max(minFee, Math.floor(rawFee)); 
+            
             let tax = type === 'sell' ? Math.floor(price * shares * 0.003) : 0;
+            
             let grossAmount = price * shares;
             let netAmount = type === 'buy' ? (grossAmount + fee) : (grossAmount - fee - tax);
 
-            transactions.unshift({ id: Date.now().toString(), date, stock, type, price, shares, fee, tax, grossAmount, netAmount });
+            const newTx = { 
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 5), 
+                date, stock, type, price, shares, fee, tax, grossAmount, netAmount 
+            };
+            
+            transactions.unshift(newTx);
             transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-            document.getElementById('price').value = ''; document.getElementById('shares').value = ''; document.getElementById('type').value = 'buy';
-            saveAndRender();
-            showModal('新增成功', `已記錄 ${stock} 的${type==='buy'?'買進':'賣出'}資料！`);
+            
+            document.getElementById('price').value = ''; 
+            document.getElementById('shares').value = ''; 
+            document.getElementById('type').value = 'buy';
+            stockInput.focus();
+            
+            saveAndRender(); // 這會觸發背景自動上傳
+            showModal('新增成功', `已成功記錄 ${stock} 的${type==='buy'?'買進':'賣出'}資料！`);
         });
+
+        const toast = document.getElementById('sync-toast');
+        const toastIcon = document.getElementById('toast-icon');
+        const toastText = document.getElementById('toast-text');
+        let toastTimeout;
+
+        function showToastMessage(icon, text) {
+            clearTimeout(toastTimeout);
+            toastIcon.textContent = icon;
+            toastText.textContent = text;
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-10');
+            }, 3000);
+        }
 
         const syncTokenInput = document.getElementById('sync-token');
         const syncGistIdInput = document.getElementById('sync-gist-id');
-        syncTokenInput.value = localStorage.getItem('githubToken') || '';
-        syncGistIdInput.value = localStorage.getItem('githubGistId') || '';
-        syncTokenInput.addEventListener('input', () => localStorage.setItem('githubToken', syncTokenInput.value.trim()));
-        syncGistIdInput.addEventListener('input', () => localStorage.setItem('githubGistId', syncGistIdInput.value.trim()));
+        const qrContainer = document.getElementById('qr-container');
+        const qrImage = document.getElementById('qr-image');
 
         window.openSyncModal = () => document.getElementById('sync-modal').classList.remove('hidden');
         window.closeSyncModal = () => document.getElementById('sync-modal').classList.add('hidden');
+
+        syncTokenInput.value = localStorage.getItem('githubToken') || '';
+        syncGistIdInput.value = localStorage.getItem('githubGistId') || '';
+        syncTokenInput.addEventListener('input', () => localStorage.setItem('githubToken', syncTokenInput.value.trim()));
+
+        // --- 核心：網頁載入時自動背景下載 ---
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const autoToken = urlParams.get('token');
+            const autoGist = urlParams.get('gist');
+            
+            if (autoToken && autoGist) {
+                // QR Code 掃描情境
+                localStorage.setItem('githubToken', autoToken);
+                localStorage.setItem('githubGistId', autoGist);
+                syncTokenInput.value = autoToken;
+                syncGistIdInput.value = autoGist;
+                
+                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+                
+                performSyncDown(autoToken, autoGist, true);
+            } else {
+                // 正常開啟情境，執行背景靜默同步
+                render();
+                silentBackgroundSyncDown(); 
+            }
+        };
+
+        // 背景安靜下載 (不會跳阻擋視窗)
+        async function silentBackgroundSyncDown() {
+            const token = localStorage.getItem('githubToken');
+            const gistId = localStorage.getItem('githubGistId');
+            if(!token || !gistId) return; // 沒設定過就不做事
+
+            isBackgroundSyncing = true;
+            try {
+                const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+                    method: 'GET', headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if(res.ok) {
+                    const data = await res.json(); 
+                    const content = data.files["stock_data.json"]?.content;
+                    if(content) {
+                        const parsed = JSON.parse(content); 
+                        // 檢查資料是否有更新，如果有才覆蓋並重新渲染
+                        if (JSON.stringify(parsed.transactions) !== JSON.stringify(transactions)) {
+                            transactions = parsed.transactions || []; 
+                            livePrices = parsed.livePrices || {};
+                            
+                            // 只存入 localStorage 和渲染，【不呼叫 saveAndRender()】避免無限迴圈上傳
+                            localStorage.setItem('stockTransactions', JSON.stringify(transactions));
+                            localStorage.setItem('stockLivePrices', JSON.stringify(livePrices));
+                            render();
+                            showToastMessage('✅', '雲端最新資料已自動同步');
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log("Background sync failed silently:", e);
+            } finally {
+                isBackgroundSyncing = false;
+            }
+        }
+
+        // 背景安靜上傳 (資料變動時自動呼叫)
+        async function silentBackgroundSyncUp() {
+            if (isBackgroundSyncing) return; // 避免互相衝突
+            
+            const token = localStorage.getItem('githubToken');
+            const gistId = localStorage.getItem('githubGistId');
+            if(!token || !gistId) return;
+
+            showToastMessage('🔄', '正在自動備份至雲端...');
+            try {
+                const payload = { files: { "stock_data.json": { content: JSON.stringify({ transactions, livePrices }) } } };
+                const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+                    method: 'PATCH', headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }, body: JSON.stringify(payload)
+                });
+                if(res.ok) {
+                    showToastMessage('☁️', '已自動備份最新紀錄');
+                }
+            } catch (e) {
+                showToastMessage('⚠️', '自動備份失敗，請檢查網路');
+            }
+        }
 
         document.getElementById('btn-sync-up').addEventListener('click', async () => {
             const token = syncTokenInput.value.trim();
@@ -375,62 +549,117 @@
             const btn = document.getElementById('btn-sync-up');
             const originalHtml = btn.innerHTML;
             btn.innerHTML = '<span class="text-2xl mb-1 animate-spin">⏳</span><span class="text-sm font-black">處理中...</span>';
+            qrContainer.classList.add('hidden');
 
             const payload = { files: { "stock_data.json": { content: JSON.stringify({ transactions, livePrices }) } } };
 
             try {
                 if(!gistId) {
-                    payload.description = "台股記帳本雲端同步檔案 (請勿刪除)"; payload.public = false;
+                    payload.description = "台股記帳本雲端同步檔案"; payload.public = false;
                     const res = await fetch('https://api.github.com/gists', {
                         method: 'POST', headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }, body: JSON.stringify(payload)
                     });
                     if(res.ok) {
-                        const data = await res.json(); gistId = data.id; syncGistIdInput.value = gistId; localStorage.setItem('githubGistId', gistId);
-                        showModal('備份庫建立成功', `已在 GitHub 建立專屬資料庫並上傳！\n\n【重要】請在手機上輸入相同的 Token，並填入以下 Gist ID 即可下載同步：\n\n${gistId}`);
+                        const data = await res.json(); 
+                        gistId = data.id; 
+                        syncGistIdInput.value = gistId; 
+                        localStorage.setItem('githubGistId', gistId);
+                        generateQRCodeAndShow(token, gistId);
                     } else showModal('建立失敗', 'Token 可能無效或缺少 gist 權限。');
                 } else {
                     const res = await fetch(`https://api.github.com/gists/${gistId}`, {
                         method: 'PATCH', headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }, body: JSON.stringify(payload)
                     });
-                    if(res.ok) showModal('上傳成功', '交易紀錄已成功備份至雲端！\n您現在可以到手機上點擊「從雲端下載」。');
-                    else showModal('更新失敗', 'Gist ID 錯誤或 Token 無效。');
+                    if(res.ok) {
+                        generateQRCodeAndShow(token, gistId);
+                    } else showModal('更新失敗', 'Gist ID 失效。請清空隱藏的 Gist ID 重試。');
                 }
-            } catch (e) { showModal('連線錯誤', '無法連接到 GitHub API。'); } finally { btn.innerHTML = originalHtml; }
+            } catch (e) { showModal('連線錯誤', '無法連接到 GitHub。'); } finally { btn.innerHTML = originalHtml; }
         });
+
+        function generateQRCodeAndShow(token, gistId) {
+            const currentUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            const syncUrl = `${currentUrl}?token=${token}&gist=${gistId}`;
+            qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(syncUrl)}`;
+            qrContainer.classList.remove('hidden');
+        }
 
         document.getElementById('btn-sync-down').addEventListener('click', () => {
-            const token = syncTokenInput.value.trim(); const gistId = syncGistIdInput.value.trim();
-            if(!token || !gistId) return showModal('資料不全', '請確保 Token 與 Gist ID 皆已填寫。');
-
-            showModal('確認下載', '這將會「完全覆蓋」這台裝置上的紀錄，確定嗎？', async () => {
-                const btn = document.getElementById('btn-sync-down');
-                const originalHtml = btn.innerHTML;
-                btn.innerHTML = '<span class="text-2xl mb-1 animate-spin">⏳</span><span class="text-sm font-black">下載中...</span>';
-                try {
-                    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
-                        method: 'GET', headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                    });
-                    if(res.ok) {
-                        const data = await res.json(); const content = data.files["stock_data.json"]?.content;
-                        if(content) {
-                            const parsed = JSON.parse(content); transactions = parsed.transactions || []; livePrices = parsed.livePrices || {};
-                            saveAndRender(); showModal('下載成功', '資料已成功與雲端同步！');
-                        } else showModal('格式錯誤', '找不到正確的資料檔案。');
-                    } else showModal('下載失敗', 'Gist ID 錯誤或 Token 無效。');
-                } catch (e) { showModal('連線錯誤', '無法連接到 GitHub API。'); } finally { btn.innerHTML = originalHtml; }
-            });
+            const token = syncTokenInput.value.trim(); 
+            const gistId = syncGistIdInput.value.trim();
+            if(!token || !gistId) return showModal('無連線資訊', '請先在電腦端上傳以產生連線資訊。');
+            showModal('確認強制下載', '下載將會覆蓋目前的紀錄，確定嗎？', () => performSyncDown(token, gistId, false));
         });
 
-        window.quickSellLot = function(stockName, remains) { switchTab('dashboard'); document.getElementById('stock').value = stockName; document.getElementById('type').value = 'sell'; document.getElementById('shares').value = remains; document.getElementById('price').focus(); };
-        window.deleteTx = function(id) { showModal('確認刪除', '紀錄刪除後無法復原，確定嗎？', () => { transactions = transactions.filter(t => t.id !== id); saveAndRender(); }); };
-        document.getElementById('btn-clear-all').addEventListener('click', () => { if(transactions.length===0) return; showModal('清空資料', '這將刪除【所有】紀錄且無法復原，確定嗎？', () => { transactions = []; saveAndRender(); }); });
-        document.getElementById('btn-print-pdf').addEventListener('click', () => { document.getElementById('print-date-range').textContent = `產生日期：${new Date().toLocaleDateString('zh-TW')}`; window.print(); });
+        async function performSyncDown(token, gistId, isAutoMode) {
+            if(isAutoMode) {
+                document.getElementById('sync-modal').classList.remove('hidden');
+                qrContainer.classList.add('hidden');
+            }
+            const btn = document.getElementById('btn-sync-down');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="text-2xl mb-1 animate-spin">⏳</span><span class="text-sm font-black">下載中...</span>';
+            
+            try {
+                const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+                    method: 'GET', headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if(res.ok) {
+                    const data = await res.json(); 
+                    const content = data.files["stock_data.json"]?.content;
+                    if(content) {
+                        const parsed = JSON.parse(content); 
+                        transactions = parsed.transactions || []; 
+                        livePrices = parsed.livePrices || {};
+                        
+                        localStorage.setItem('stockTransactions', JSON.stringify(transactions));
+                        localStorage.setItem('stockLivePrices', JSON.stringify(livePrices));
+                        render(); 
+                        
+                        showModal('✨ 連線成功', isAutoMode ? '手機已完成設定！您現在可以看到最新資料，未來系統將全自動同步。' : '資料已成功強制更新。');
+                    }
+                } else {
+                    showModal('下載失敗', '無法讀取資料。');
+                }
+            } catch (e) { showModal('連線錯誤', '無法連接到 GitHub API。'); } finally { btn.innerHTML = originalHtml; }
+        }
+
+        window.quickSellLot = function(stockName, remains) { 
+            switchTab('dashboard'); 
+            document.getElementById('stock').value = stockName; 
+            document.getElementById('type').value = 'sell'; 
+            document.getElementById('shares').value = remains; 
+            document.getElementById('price').focus(); 
+        };
+        
+        window.deleteTx = function(id) { 
+            showModal('確認刪除', '紀錄刪除後無法復原，確定嗎？', () => { 
+                transactions = transactions.filter(t => t.id !== id); 
+                saveAndRender(); 
+            }); 
+        };
+
+        document.getElementById('btn-clear-all').addEventListener('click', () => {
+            if(transactions.length === 0) return;
+            showModal('清空所有資料', '這將會刪除您輸入的【所有】交易紀錄，確定嗎？', () => {
+                transactions = [];
+                saveAndRender();
+            });
+        });
+        
+        document.getElementById('btn-print-pdf').addEventListener('click', () => { 
+            document.getElementById('print-date-range').textContent = `產生日期：${new Date().toLocaleDateString('zh-TW')} ${new Date().toLocaleTimeString('zh-TW')}`; 
+            window.print(); 
+        });
 
         document.getElementById('btn-export').addEventListener('click', () => {
             if (transactions.length === 0) return showModal('無法匯出', '目前無紀錄。');
             let csv = "\uFEFF系統ID,日期,股票代號/名稱,買賣類別,成交單價,成交股數,手續費,證交稅,總金額,淨收付金額\n";
             transactions.forEach(t => csv += `${t.id},${t.date},${t.stock},${t.type==='buy'?'買進':'賣出'},${t.price},${t.shares},${t.fee},${t.tax},${t.grossAmount},${t.netAmount}\n`);
-            const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'})); link.download = `交易紀錄_${new Date().toISOString().split('T')[0]}.csv`; link.click();
+            const link = document.createElement("a"); 
+            link.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'})); 
+            link.download = `交易紀錄_${new Date().toISOString().split('T')[0]}.csv`; 
+            link.click();
         });
 
         document.getElementById('btn-import').addEventListener('click', () => document.getElementById('import-file').click());
@@ -449,122 +678,233 @@
                         } else skipped++;
                     }
                 }
-                transactions.sort((a, b) => new Date(b.date) - new Date(a.date)); saveAndRender(); showModal('匯入完成', `匯入 ${imported} 筆，略過重複 ${skipped} 筆。`); e.target.value = '';
-            }; reader.readAsText(file);
+                transactions.sort((a, b) => new Date(b.date) - new Date(a.date)); saveAndRender(); 
+                showModal('匯入完成', `匯入了 ${imported} 筆新紀錄！(略過 ${skipped} 筆重複)`); 
+                e.target.value = '';
+            };
+            reader.readAsText(file);
         });
 
-        window.updateManualPrice = function(stock) {
-            const input = prompt(`輸入 ${stock} 最新股價:`, livePrices[stock] || '');
-            if (input === null) return;
-            const val = parseFloat(input); if (!isNaN(val) && val > 0) livePrices[stock] = val; else delete livePrices[stock];
-            saveAndRender();
+        window.updateLivePrice = function(stock) {
+            let currentVal = livePrices[stock] || '';
+            let newVal = prompt(`請輸入 ${stock} 的最新股價：`, currentVal);
+            if (newVal !== null && newVal.trim() !== '') {
+                livePrices[stock] = parseFloat(newVal);
+                saveAndRender();
+            }
         };
 
-        function saveAndRender() { localStorage.setItem('stockTransactions', JSON.stringify(transactions)); localStorage.setItem('stockLivePrices', JSON.stringify(livePrices)); render(); }
+        function saveAndRender() {
+            localStorage.setItem('stockTransactions', JSON.stringify(transactions));
+            localStorage.setItem('stockLivePrices', JSON.stringify(livePrices));
+            render();
+            // 觸發背景全自動上傳
+            silentBackgroundSyncUp();
+        }
 
         function render() {
-            const filterStock = document.getElementById('filter-stock'); const currentStock = filterStock.value;
-            const uniqueStocks = [...new Set(transactions.map(t => t.stock))].sort();
-            filterStock.innerHTML = '<option value="all">全部股票</option>' + uniqueStocks.map(s => `<option value="${s}">${s}</option>`).join('');
-            if(uniqueStocks.includes(currentStock)) filterStock.value = currentStock;
+            const inventoryMap = {};
+            let totalCost = 0, realizedPnl = 0, unrealizedPnl = 0;
             
-            const selStock = filterStock.value, selType = document.getElementById('filter-type').value;
-            let totalCost = 0, totalRealized = 0, totalUnrealized = 0, statCount = 0, statBuyTotal = 0, statSellTotal = 0, statRealizedPnl = 0;
-            const inv = {}, txPnLMap = {}, remainsMap = {}, sortedForCalc = [...transactions].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const filterStock = document.getElementById('filter-stock').value;
+            const filterType = document.getElementById('filter-type').value;
 
-            // 計算批次與成本
-            sortedForCalc.forEach(tx => {
-                if (!inv[tx.stock]) inv[tx.stock] = { shares: 0, totalCost: 0, avgPrice: 0, buyQueue: [] };
-                const sInv = inv[tx.stock];
-                if (tx.type === 'buy') {
-                    sInv.shares += tx.shares; sInv.totalCost += tx.netAmount; sInv.avgPrice = sInv.totalCost / sInv.shares;
-                    totalCost += tx.netAmount; sInv.buyQueue.push({ id: tx.id, sharesLeft: tx.shares }); remainsMap[tx.id] = tx.shares;
-                } else {
-                    const avgCostForSell = tx.shares * sInv.avgPrice; const pnl = tx.netAmount - avgCostForSell;
-                    totalRealized += pnl; txPnLMap[tx.id] = pnl;
-                    sInv.shares -= tx.shares; sInv.totalCost -= avgCostForSell;
-                    if (sInv.shares <= 0) { sInv.shares = 0; sInv.totalCost = 0; sInv.avgPrice = 0; }
-                    let deduct = tx.shares;
-                    for (let i = 0; i < sInv.buyQueue.length && deduct > 0; i++) {
-                        let d = Math.min(deduct, sInv.buyQueue[i].sharesLeft);
-                        sInv.buyQueue[i].sharesLeft -= d; remainsMap[sInv.buyQueue[i].id] = sInv.buyQueue[i].sharesLeft; deduct -= d;
-                    }
-                }
+            // 處理買進庫存
+            transactions.filter(t => t.type === 'buy').forEach(t => {
+                totalCost += t.netAmount;
+                if (!inventoryMap[t.stock]) inventoryMap[t.stock] = { shares: 0, totalCost: 0, lots: [] };
+                inventoryMap[t.stock].shares += t.shares;
+                inventoryMap[t.stock].totalCost += t.netAmount;
+                inventoryMap[t.stock].lots.push({...t, remains: t.shares});
             });
 
-            // 渲染庫存
-            const invList = document.getElementById('inventory-list'); invList.innerHTML = '';
-            for (const [stock, data] of Object.entries(inv)) {
-                if (data.shares > 0) {
-                    let estRet = 0, unPnL = 0, roi = 0, avgPrice = data.totalCost / data.shares;
-                    if (livePrices[stock]) {
-                        const price = livePrices[stock], discount = parseFloat(document.getElementById('discount-rate').value) || 0.28;
-                        let rawFee = price * data.shares * 0.001425 * discount;
-                        let fee = data.shares < 1000 ? Math.max(1, Math.floor(rawFee)) : Math.max(20, Math.floor(rawFee));
-                        let tax = Math.floor(price * data.shares * 0.003);
-                        estRet = (price * data.shares) - fee - tax; unPnL = estRet - data.totalCost; roi = unPnL / data.totalCost;
-                        totalUnrealized += unPnL;
+            // 處理賣出沖銷
+            transactions.filter(t => t.type === 'sell').reverse().forEach(t => {
+                let sharesToSell = t.shares;
+                let sellPnl = 0;
+                let originalSellNet = t.netAmount;
+
+                if (inventoryMap[t.stock]) {
+                    inventoryMap[t.stock].shares -= t.shares;
+                    
+                    for (let lot of inventoryMap[t.stock].lots) {
+                        if (sharesToSell <= 0) break;
+                        if (lot.remains > 0) {
+                            let deductShares = Math.min(lot.remains, sharesToSell);
+                            let costRatio = deductShares / lot.shares;
+                            let deductedCost = lot.netAmount * costRatio;
+                            
+                            lot.remains -= deductShares;
+                            inventoryMap[t.stock].totalCost -= deductedCost;
+                            
+                            let revenueRatio = deductShares / t.shares;
+                            let realizedRevenue = originalSellNet * revenueRatio;
+                            
+                            sellPnl += (realizedRevenue - deductedCost);
+                            sharesToSell -= deductShares;
+                        }
                     }
-                    const pnlColor = unPnL > 0 ? 'text-red-600' : (unPnL < 0 ? 'text-green-600' : 'text-slate-700');
+                }
+                t.calculatedPnl = sellPnl;
+                realizedPnl += sellPnl;
+            });
+
+            document.getElementById('summary-cost').textContent = formatMoney(totalCost);
+            document.getElementById('summary-realized').textContent = formatMoney(realizedPnl);
+            document.getElementById('summary-count').textContent = transactions.length + ' 筆';
+            if (realizedPnl > 0) document.getElementById('summary-realized').className = "text-2xl font-black text-red-600 truncate";
+            else if (realizedPnl < 0) document.getElementById('summary-realized').className = "text-2xl font-black text-green-600 truncate";
+            else document.getElementById('summary-realized').className = "text-2xl font-black text-slate-900 truncate";
+
+            const invList = document.getElementById('inventory-list');
+            invList.innerHTML = '';
+            
+            const stockOptions = new Set();
+            transactions.forEach(t => stockOptions.add(t.stock));
+            
+            for (const [stock, data] of Object.entries(inventoryMap)) {
+                if (data.shares > 0) {
+                    let avgCost = data.totalCost / data.shares;
+                    let livePrice = livePrices[stock];
+                    let currentValHTML = `<button onclick="updateLivePrice('${stock}')" class="text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-200 text-sm font-bold shadow-sm whitespace-nowrap transition-colors">點此輸入</button>`;
+                    let estValueHTML = '-', estPnlHTML = '-', roiHTML = '-';
+                    
+                    if (livePrice) {
+                        currentValHTML = `<button onclick="updateLivePrice('${stock}')" class="text-slate-800 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg border border-slate-300 font-black text-base shadow-sm whitespace-nowrap transition-colors bg-white">${formatMoney(livePrice)}</button>`;
+                        
+                        let discount = parseFloat(document.getElementById('discount-rate').value) || 0.28;
+                        let rawFee = livePrice * data.shares * 0.001425 * discount;
+                        let minFee = data.shares < 1000 ? 1 : 20;
+                        let estFee = Math.max(minFee, Math.floor(rawFee)); 
+                        let estTax = Math.floor(livePrice * data.shares * 0.003);
+                        let estNetValue = (livePrice * data.shares) - estFee - estTax;
+                        
+                        let estPnl = estNetValue - data.totalCost;
+                        unrealizedPnl += estPnl;
+                        let roi = estPnl / data.totalCost;
+                        
+                        estValueHTML = `<span class="font-black text-slate-900">${formatMoney(estNetValue)}</span>`;
+                        
+                        let pnlColor = estPnl > 0 ? 'text-red-600' : (estPnl < 0 ? 'text-green-600' : 'text-slate-600');
+                        estPnlHTML = `<span class="font-black ${pnlColor}">${formatMoney(estPnl)}</span>`;
+                        roiHTML = `<span class="font-black ${pnlColor} text-base">${formatPercent(roi)}</span>`;
+                    }
+                    
                     invList.innerHTML += `
-                        <tr class="hover:bg-slate-50 border-b border-slate-200">
-                            <td class="px-3 py-3">${formatStockDisplayResponsive(stock)}</td>
-                            <td class="px-3 py-3 text-right font-black text-lg">${data.shares.toLocaleString()}</td>
-                            <td class="px-3 py-3 text-right font-bold">${formatMoney(avgPrice)}</td>
-                            <td class="px-3 py-3 text-right font-black">${formatMoney(data.totalCost)}</td>
-                            <td class="px-3 py-3 text-center"><button onclick="updateManualPrice('${stock}')" class="px-3 py-1.5 bg-white text-indigo-700 rounded-lg text-sm font-black border-2 border-indigo-200 shadow-sm">${livePrices[stock]?formatMoney(livePrices[stock]):'點此輸入'}</button></td>
-                            <td class="px-3 py-3 text-right font-black">${formatMoney(estRet)}</td>
-                            <td class="px-3 py-3 text-right ${pnlColor} font-black text-lg">${unPnL>0?'+':''}${formatMoney(unPnL)}</td>
-                            <td class="px-3 py-3 text-right ${pnlColor} font-black text-lg">${unPnL>0?'+':''}${formatPercent(roi)}</td>
-                        </tr>`;
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-4 py-3">${formatStockSplit(stock)}</td>
+                            <td class="px-4 py-3 text-right font-black text-slate-900">${data.shares} <span class="text-xs text-slate-500 font-bold">股</span></td>
+                            <td class="px-4 py-3 text-right font-black text-slate-700">${formatMoney(avgCost)}</td>
+                            <td class="px-4 py-3 text-right font-black text-slate-900">${formatMoney(data.totalCost)}</td>
+                            <td class="px-4 py-3 text-center">${currentValHTML}</td>
+                            <td class="px-4 py-3 text-right">${estValueHTML}</td>
+                            <td class="px-4 py-3 text-right">${estPnlHTML}</td>
+                            <td class="px-4 py-3 text-right">${roiHTML}</td>
+                        </tr>
+                    `;
                 }
             }
-            if(invList.innerHTML==='') invList.innerHTML = '<tr><td colspan="8" class="text-center py-10 text-slate-500 font-bold">無庫存</td></tr>';
 
-            // 更新儀表板
-            document.getElementById('summary-cost').textContent = formatMoney(totalCost);
-            document.getElementById('summary-realized').textContent = (totalRealized>0?'+':'') + formatMoney(totalRealized);
-            document.getElementById('summary-realized').className = `text-xl sm:text-3xl font-black truncate ${totalRealized>0?'text-red-600':(totalRealized<0?'text-green-600':'text-slate-900')}`;
-            document.getElementById('summary-unrealized').textContent = (totalUnrealized>0?'+':'') + formatMoney(totalUnrealized);
-            document.getElementById('summary-unrealized').className = `text-2xl sm:text-3xl font-black truncate ${totalUnrealized>0?'text-red-600':(totalUnrealized<0?'text-green-600':'text-slate-900')}`;
-            document.getElementById('summary-count').textContent = `${transactions.length} 筆`;
+            if (invList.innerHTML === '') invList.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-slate-500 font-bold">目前無庫存</td></tr>';
 
-            // 渲染明細
-            const list = document.getElementById('transaction-list'); list.innerHTML = '';
-            transactions.forEach(tx => {
-                if (selStock !== 'all' && tx.stock !== selStock) return;
-                if (selType !== 'all' && tx.type !== selType) return;
-                statCount++; if(tx.type === 'buy') statBuyTotal += tx.netAmount; else { statSellTotal += tx.netAmount; statRealizedPnl += (txPnLMap[tx.id]||0); }
+            document.getElementById('summary-unrealized').textContent = formatMoney(unrealizedPnl);
+            if (unrealizedPnl > 0) document.getElementById('summary-unrealized').className = "text-3xl font-black text-red-600 truncate";
+            else if (unrealizedPnl < 0) document.getElementById('summary-unrealized').className = "text-3xl font-black text-green-600 truncate";
+            else document.getElementById('summary-unrealized').className = "text-3xl font-black text-slate-900 truncate";
+
+            const filterStockSelect = document.getElementById('filter-stock');
+            const currentStockVal = filterStockSelect.value;
+            filterStockSelect.innerHTML = '<option value="all">全部股票</option>';
+            Array.from(stockOptions).sort().forEach(s => {
+                filterStockSelect.innerHTML += `<option value="${s}">${s}</option>`;
+            });
+            filterStockSelect.value = stockOptions.has(currentStockVal) ? currentStockVal : 'all';
+
+            const txList = document.getElementById('transaction-list');
+            txList.innerHTML = '';
+            
+            let listBuyTotal = 0, listSellTotal = 0, listPnlTotal = 0, listCount = 0;
+
+            transactions.forEach(t => {
+                if (filterStock !== 'all' && t.stock !== filterStock) return;
+                if (filterType !== 'all' && t.type !== filterType) return;
+
+                listCount++;
+                if (t.type === 'buy') listBuyTotal += t.netAmount;
+                if (t.type === 'sell') { listSellTotal += t.netAmount; listPnlTotal += (t.calculatedPnl || 0); }
+
+                const typeClass = t.type === 'buy' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700';
+                const typeText = t.type === 'buy' ? '買進' : '賣出';
+                const amountColor = t.type === 'buy' ? 'text-green-600' : 'text-red-600';
+                const amountPrefix = t.type === 'buy' ? '-' : '+';
                 
-                const isBuy = tx.type === 'buy', pnl = txPnLMap[tx.id]||0, remains = remainsMap[tx.id]||0;
-                let subHtml = '', btnHtml = '';
-                if(isBuy) {
-                    subHtml = remains > 0 ? `<div class="text-[11px] text-blue-700 mt-1 font-black bg-blue-50 inline-block px-1.5 py-0.5 rounded border border-blue-200">未賣出 ${remains} 股</div>` : `<div class="text-[11px] text-slate-500 mt-1 bg-slate-100 inline-block px-1.5 py-0.5 rounded border border-slate-300 font-bold">已沖銷</div>`;
-                    if(remains>0) btnHtml = `<button onclick="quickSellLot('${tx.stock}', ${remains})" class="text-blue-700 bg-white border border-blue-300 px-2 py-1 rounded-lg text-xs font-black shadow-sm">賣出此筆</button>`;
-                } else {
-                    subHtml = `<div class="text-[12px] mt-1.5 font-black inline-block px-2 py-0.5 rounded border ${pnl>0?'text-red-600 border-red-200 bg-red-50':(pnl<0?'text-green-600 border-green-200 bg-green-50':'')}">盈虧 ${pnl>0?'+':''}${formatMoney(pnl)}</div>`;
+                let extraInfoHTML = '';
+                let actionHTML = `<button onclick="deleteTx('${t.id}')" class="p-2 text-slate-400 hover:text-red-600 transition-colors bg-white border border-slate-200 rounded-lg shadow-sm"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>`;
+
+                if (t.type === 'buy') {
+                    let remains = 0;
+                    if (inventoryMap[t.stock]) {
+                        const lot = inventoryMap[t.stock].lots.find(l => l.id === t.id);
+                        if (lot) remains = lot.remains;
+                    }
+                    if (remains > 0) {
+                        extraInfoHTML = `<div class="mt-1 text-[11px] font-black text-blue-600 bg-blue-50 inline-block px-1.5 py-0.5 rounded">未賣出: ${remains} 股</div>`;
+                        actionHTML = `<button onclick="quickSellLot('${t.stock}', ${remains})" class="text-[12px] font-black text-blue-600 bg-blue-50 border border-blue-200 hover:bg-blue-100 px-2 py-1.5 rounded-lg whitespace-nowrap shadow-sm mr-1">賣出此筆</button>` + actionHTML;
+                    } else {
+                        extraInfoHTML = `<div class="mt-1 text-[11px] font-bold text-slate-400 bg-slate-100 border border-slate-200 inline-block px-1.5 py-0.5 rounded">已全數沖銷</div>`;
+                    }
+                } else if (t.type === 'sell' && t.calculatedPnl !== undefined) {
+                    let pnlColor = t.calculatedPnl > 0 ? 'text-red-600' : (t.calculatedPnl < 0 ? 'text-green-600' : 'text-slate-600');
+                    let pnlPrefix = t.calculatedPnl > 0 ? '+' : '';
+                    extraInfoHTML = `<div class="mt-1 text-[12px] font-black ${pnlColor} bg-slate-50 border border-slate-200 inline-block px-1.5 py-0.5 rounded shadow-sm">盈虧: ${pnlPrefix}${formatMoney(t.calculatedPnl)}</div>`;
                 }
 
-                list.innerHTML += `
-                    <tr class="hover:bg-slate-50 border-b border-slate-100">
-                        <td class="px-3 py-2 text-xs font-bold text-slate-600">${tx.date}</td>
-                        <td class="px-3 py-2">${formatStockDisplayResponsive(tx.stock)}</td>
-                        <td class="px-3 py-2 text-center"><span class="px-3 py-1 rounded-full text-xs font-black ${isBuy?'bg-blue-50 text-blue-700 border-blue-200':'bg-orange-50 text-orange-700 border-orange-200'} border">${isBuy?'買進':'賣出'}</span></td>
-                        <td class="px-3 py-2 text-right"><div class="font-black text-base">$${tx.price}</div><div class="text-xs text-slate-500 font-bold">${tx.shares} 股</div>${isBuy?subHtml:''}</td>
-                        <td class="px-3 py-2 text-right text-xs font-bold text-slate-500"><div>費: $${Math.round(tx.fee)}</div>${!isBuy?`<div>稅: $${Math.round(tx.tax)}</div>`:''}</td>
-                        <td class="px-3 py-2 text-right font-black ${isBuy?'text-green-600':'text-red-600'}"><div class="text-lg">${isBuy?'-':'+'}${formatMoney(tx.netAmount)}</div>${!isBuy?subHtml:''}</td>
-                        <td class="px-3 py-2 text-center print:hidden"><div class="flex items-center justify-center gap-2">${btnHtml}<button onclick="deleteTx('${tx.id}')" class="text-slate-400 hover:text-red-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div></td>
-                    </tr>`;
+                txList.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-3 py-3 text-sm font-bold text-slate-600 whitespace-nowrap">${t.date}</td>
+                        <td class="px-3 py-3">${formatStockSplit(t.stock)}</td>
+                        <td class="px-3 py-3 text-center">
+                            <span class="px-2 py-1 rounded-full text-[11px] font-black ${typeClass} whitespace-nowrap">${typeText}</span>
+                        </td>
+                        <td class="px-3 py-3 text-right whitespace-nowrap">
+                            <div class="font-black text-slate-900 text-sm">${formatMoney(t.price)}</div>
+                            <div class="text-[12px] text-slate-500 font-bold mt-0.5">${t.shares} <span class="text-[10px]">股</span></div>
+                        </td>
+                        <td class="px-3 py-3 text-right whitespace-nowrap">
+                            <div class="text-[12px] font-bold text-slate-600">費: ${formatMoney(t.fee)}</div>
+                            ${t.tax > 0 ? `<div class="text-[12px] font-bold text-slate-600 mt-0.5">稅: ${formatMoney(t.tax)}</div>` : ''}
+                        </td>
+                        <td class="px-3 py-3 text-right whitespace-nowrap">
+                            <div class="font-black ${amountColor} text-base">${amountPrefix}${formatMoney(t.netAmount)}</div>
+                            ${extraInfoHTML}
+                        </td>
+                        <td class="px-3 py-3 text-center print-hide whitespace-nowrap flex justify-center items-center h-full pt-4">
+                            ${actionHTML}
+                        </td>
+                    </tr>
+                `;
             });
-            if(statCount===0) list.innerHTML = '<tr><td colspan="7" class="text-center py-10 text-slate-500 font-bold">無紀錄</td></tr>';
+            
+            if (txList.innerHTML === '') txList.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500 font-bold">尚無符合的交易紀錄</td></tr>';
 
-            document.getElementById('stat-count').textContent = statCount; document.getElementById('stat-buy-total').textContent = formatMoney(statBuyTotal); document.getElementById('stat-sell-total').textContent = formatMoney(statSellTotal);
-            const pnlEl = document.getElementById('stat-total-pnl'); pnlEl.textContent = (statRealizedPnl>0?'+':'') + formatMoney(statRealizedPnl);
-            pnlEl.className = `bg-white px-2 py-0.5 rounded border text-base ${statRealizedPnl>0?'text-red-600 border-red-200':(statRealizedPnl<0?'text-green-600 border-green-200':'')}`;
-            document.getElementById('stat-buy-wrapper').style.display = selType === 'sell' ? 'none' : 'flex';
-            document.getElementById('stat-sell-wrapper').style.display = selType === 'buy' ? 'none' : 'flex';
-            document.getElementById('stat-pnl-wrapper').style.display = selType === 'buy' ? 'none' : 'flex';
+            // 更新統計列
+            document.getElementById('stat-count').textContent = listCount;
+            document.getElementById('stat-buy-total').textContent = formatMoney(listBuyTotal);
+            document.getElementById('stat-sell-total').textContent = formatMoney(listSellTotal);
+            
+            const pnlWrapper = document.getElementById('stat-pnl-wrapper');
+            const pnlSpan = document.getElementById('stat-total-pnl');
+            if (filterType === 'buy') {
+                pnlWrapper.classList.add('hidden');
+            } else {
+                pnlWrapper.classList.remove('hidden');
+                pnlSpan.textContent = formatMoney(listPnlTotal);
+                if (listPnlTotal > 0) pnlSpan.className = "bg-red-50 text-red-600 border-red-200 px-2 py-0.5 rounded border text-base shadow-sm font-black";
+                else if (listPnlTotal < 0) pnlSpan.className = "bg-green-50 text-green-700 border-green-200 px-2 py-0.5 rounded border text-base shadow-sm font-black";
+                else pnlSpan.className = "bg-white text-slate-800 border-slate-300 px-2 py-0.5 rounded border text-base shadow-sm font-black";
+            }
         }
+
         render();
     </script>
 </body>
