@@ -8,22 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        
-        /* 現代化細緻捲軸 */
         .custom-scrollbar::-webkit-scrollbar { height: 8px; width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
-        
-        /* 分頁切換動畫 */
         .tab-content { display: none; opacity: 0; transition: opacity 0.3s ease; }
         .tab-content.active { display: block; opacity: 1; animation: slideUp 0.3s ease-out forwards; }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* 報表輸出 PDF 專用隱藏與優化樣式 */
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: white !important; }
             .custom-scrollbar::-webkit-scrollbar { display: none; }
@@ -40,25 +31,31 @@
                 <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">台股交易紀錄與盈虧計算機</h1>
                 <p class="text-xs sm:text-sm text-slate-500 mt-1 font-bold">專為新光證券優化 ｜ 支援即時股價估算 ｜ 批次賣出追蹤</p>
             </div>
-            <div class="flex items-center bg-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-sm border border-slate-200 w-full md:w-auto justify-between md:justify-start">
-                <label class="text-sm font-bold text-slate-700 mr-2 sm:mr-3">手續費折讓</label>
-                <div class="flex items-center gap-1.5">
-                    <input type="number" id="discount-rate" value="0.28" step="0.01" min="0.01" max="1" class="w-16 sm:w-20 px-2 py-1 text-sm sm:text-base font-black border border-slate-300 rounded-lg bg-slate-50 text-center focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-inner">
-                    <span class="text-sm font-bold text-slate-500">折</span>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+                <div class="flex items-center bg-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-sm border border-slate-200 justify-between md:justify-start">
+                    <label class="text-sm font-bold text-slate-700 mr-2 sm:mr-3">手續費折讓</label>
+                    <div class="flex items-center gap-1.5">
+                        <input type="number" id="discount-rate" value="0.28" step="0.01" min="0.01" max="1" class="w-16 sm:w-20 px-2 py-1 text-sm sm:text-base font-black border border-slate-300 rounded-lg bg-slate-50 text-center focus:ring-2 focus:ring-indigo-500 outline-none shadow-inner">
+                        <span class="text-sm font-bold text-slate-500">折</span>
+                    </div>
                 </div>
+                <button onclick="openSyncModal()" class="justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-black shadow-sm transition-colors flex items-center gap-1.5 whitespace-nowrap">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                    雲端同步
+                </button>
             </div>
         </header>
 
         <!-- Tabs Navigation -->
-        <div class="flex justify-center mb-4 sm:mb-8 print:hidden">
-            <div class="bg-slate-200/80 p-1 sm:p-1.5 rounded-xl flex shadow-inner overflow-x-auto custom-scrollbar w-full sm:w-auto border border-slate-300 snap-x">
-                <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="flex-1 sm:flex-none px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-black transition-all whitespace-nowrap bg-slate-800 text-white shadow-md snap-center">
+        <div class="flex justify-start sm:justify-center mb-4 sm:mb-8 print:hidden overflow-x-auto custom-scrollbar pb-1">
+            <div class="bg-slate-200/80 p-1 sm:p-1.5 rounded-xl flex shadow-inner min-w-max border border-slate-300">
+                <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-black transition-all whitespace-nowrap bg-slate-800 text-white shadow-md">
                     概況與輸入
                 </button>
-                <button onclick="switchTab('inventory')" id="tab-btn-inventory" class="flex-1 sm:flex-none px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900 hover:bg-slate-300/50 snap-center">
+                <button onclick="switchTab('inventory')" id="tab-btn-inventory" class="px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900 hover:bg-slate-300/50">
                     庫存與即時盈虧
                 </button>
-                <button onclick="switchTab('history')" id="tab-btn-history" class="flex-1 sm:flex-none px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900 hover:bg-slate-300/50 snap-center">
+                <button onclick="switchTab('history')" id="tab-btn-history" class="px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900 hover:bg-slate-300/50">
                     完整交易明細
                 </button>
             </div>
@@ -66,33 +63,28 @@
 
         <!-- Tab 1: Dashboard -->
         <div id="tab-dashboard" class="tab-content active space-y-4 sm:space-y-6">
-            <!-- 統計卡片 -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h3 class="text-[10px] sm:text-xs font-black text-slate-500 uppercase tracking-wider mb-1 sm:mb-2">總投入成本</h3>
+                    <h3 class="text-[10px] sm:text-xs font-black text-slate-500 uppercase tracking-wider mb-1">總投入成本</h3>
                     <p class="text-xl sm:text-3xl font-black text-slate-900 truncate" id="summary-cost">$0</p>
                 </div>
                 <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h3 class="text-[10px] sm:text-xs font-black text-slate-500 uppercase tracking-wider mb-1 sm:mb-2">累計已實現</h3>
+                    <h3 class="text-[10px] sm:text-xs font-black text-slate-500 uppercase tracking-wider mb-1">累計已實現</h3>
                     <p class="text-xl sm:text-3xl font-black text-slate-900 truncate" id="summary-realized">$0</p>
                 </div>
                 <div class="bg-indigo-50/50 p-4 sm:p-6 rounded-2xl shadow-sm border border-indigo-200 relative col-span-2 lg:col-span-1">
-                    <div class="absolute right-3 top-3">
-                        <span class="flex h-2.5 w-2.5 sm:h-3 sm:w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-indigo-600"></span></span>
-                    </div>
-                    <h3 class="text-[10px] sm:text-xs font-black text-indigo-800 uppercase tracking-wider mb-1 sm:mb-2">預估未實現損益</h3>
+                    <h3 class="text-[10px] sm:text-xs font-black text-indigo-800 uppercase tracking-wider mb-1">預估未實現損益</h3>
                     <p class="text-2xl sm:text-3xl font-black text-slate-900 truncate" id="summary-unrealized">$0</p>
                 </div>
                 <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 hidden lg:block">
-                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">總交易筆數</h3>
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-wider mb-1">總交易筆數</h3>
                     <p class="text-3xl font-black text-slate-900" id="summary-count">0 筆</p>
                 </div>
             </div>
 
-            <!-- 輸入表單 -->
             <div class="bg-white p-5 sm:p-8 rounded-2xl shadow-sm border border-slate-200 max-w-4xl mx-auto mt-4 sm:mt-8">
-                <div class="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 border-b border-slate-100 pb-3 sm:pb-4">
-                    <div class="bg-indigo-600 p-1.5 sm:p-2 rounded-lg text-white shadow-sm">
+                <div class="flex items-center gap-2 mb-4 sm:mb-6 border-b border-slate-100 pb-3 sm:pb-4">
+                    <div class="bg-indigo-600 p-1.5 sm:p-2 rounded-lg text-white">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     </div>
                     <h2 class="text-lg sm:text-xl font-black text-slate-800">新增交易紀錄</h2>
@@ -100,33 +92,33 @@
                 <form id="transaction-form" class="space-y-4 sm:space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-5 gap-4 sm:gap-5">
                         <div class="md:col-span-1">
-                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5 sm:mb-2">交易日期</label>
-                            <input type="date" id="date" required class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-semibold shadow-inner text-sm sm:text-base">
+                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">交易日期</label>
+                            <input type="date" id="date" required class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-semibold shadow-inner text-sm sm:text-base">
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5 sm:mb-2">股票代號/名稱</label>
-                            <input type="text" id="stock" required list="stock-list" autocomplete="off" placeholder="輸入代號自動補齊名稱" class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-bold text-slate-900 shadow-inner text-sm sm:text-base">
+                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">股票代號/名稱</label>
+                            <input type="text" id="stock" required list="stock-list" autocomplete="off" placeholder="打代號自動補名稱" class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-bold text-slate-900 shadow-inner text-sm sm:text-base">
                             <datalist id="stock-list"></datalist>
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5 sm:mb-2">買進 / 賣出</label>
-                            <select id="type" class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-black shadow-inner text-sm sm:text-base">
-                                <option value="buy" class="text-blue-700 font-bold">買進 (Buy)</option>
-                                <option value="sell" class="text-orange-700 font-bold">賣出 (Sell)</option>
+                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">買進 / 賣出</label>
+                            <select id="type" class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-black shadow-inner text-sm sm:text-base">
+                                <option value="buy" class="text-blue-700">買進 (Buy)</option>
+                                <option value="sell" class="text-orange-700">賣出 (Sell)</option>
                             </select>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-2 gap-4 sm:gap-5 pt-1 sm:pt-2">
+                    <div class="grid grid-cols-2 gap-4 sm:gap-5">
                         <div>
-                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5 sm:mb-2">單價</label>
-                            <input type="number" id="price" required step="0.01" min="0.01" placeholder="例如: 1050" class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-black text-lg sm:text-xl shadow-inner text-right">
+                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">單價</label>
+                            <input type="number" id="price" required step="0.01" min="0.01" placeholder="1050" class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-black text-lg sm:text-xl shadow-inner text-right">
                         </div>
                         <div>
-                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5 sm:mb-2">股數 (1張=1000)</label>
-                            <input type="number" id="shares" required min="1" placeholder="例如: 1000" class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-black text-lg sm:text-xl shadow-inner text-right">
+                            <label class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">股數</label>
+                            <input type="number" id="shares" required min="1" placeholder="1000" class="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 font-black text-lg sm:text-xl shadow-inner text-right">
                         </div>
                     </div>
-                    <button type="submit" class="w-full bg-slate-900 hover:bg-indigo-600 text-white font-black py-3 sm:py-4 rounded-xl transition-all mt-2 sm:mt-4 text-base sm:text-lg shadow-lg hover:shadow-xl focus:ring-4 focus:ring-indigo-200">
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-indigo-600 text-white font-black py-3 sm:py-4 rounded-xl transition-all mt-2 text-base sm:text-lg shadow-lg">
                         確認新增
                     </button>
                 </form>
@@ -136,176 +128,154 @@
         <!-- Tab 2: Inventory -->
         <div id="tab-inventory" class="tab-content">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="px-4 sm:px-6 py-3 sm:py-5 border-b border-slate-200 flex justify-between items-center bg-white">
-                    <h2 class="text-lg sm:text-xl font-black text-slate-800">目前庫存與即時未實現損益</h2>
-                </div>
-                <div class="px-4 sm:px-6 py-2.5 sm:py-3 bg-slate-50 border-b border-slate-200 text-xs sm:text-sm text-slate-700 font-bold flex items-start sm:items-center gap-2">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 mt-0.5 sm:mt-0 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span>點擊「即時股價」欄位的數字即可更新報價，系統會自動預扣賣出時的稅費，計算最真實的盈虧。</span>
-                </div>
-                <div class="overflow-x-auto custom-scrollbar pb-2" style="-webkit-overflow-scrolling: touch;">
-                    <table class="w-full text-left border-collapse min-w-[800px] sm:min-w-[950px]">
+                <div class="px-4 sm:px-6 py-3 border-b border-slate-200 bg-white"><h2 class="text-lg sm:text-xl font-black text-slate-800">目前庫存與即時未實現損益</h2></div>
+                <div class="px-4 sm:px-6 py-2.5 bg-slate-50 border-b border-slate-200 text-xs sm:text-sm text-slate-700 font-bold flex gap-2"><svg class="w-4 h-4 text-indigo-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>點擊「即時股價」欄位的數字即可更新報價，系統會自動預扣賣出稅費。</span></div>
+                <div class="overflow-x-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                    <table class="w-full text-left border-collapse min-w-[800px]">
                         <thead class="bg-slate-800 text-white">
                             <tr class="text-[12px] sm:text-[14px] font-bold tracking-wider">
-                                <th class="px-3 sm:px-6 py-3 sm:py-4 rounded-tl-lg whitespace-nowrap w-[15%]">股票</th>
-                                <th class="px-3 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap w-[12%]">剩餘股數</th>
-                                <th class="px-3 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap w-[12%]">平均成本</th>
-                                <th class="px-3 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap w-[15%]">總投入成本</th>
-                                <th class="px-3 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap w-[14%]">即時股價 ✏️</th>
-                                <th class="px-3 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap w-[14%]">預估現值 (扣稅費)</th>
-                                <th class="px-3 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap w-[10%]">預估未實現損益</th>
-                                <th class="px-3 sm:px-6 py-3 sm:py-4 rounded-tr-lg text-right whitespace-nowrap w-[8%]">報酬率</th>
+                                <th class="px-3 py-3 w-[15%]">股票</th>
+                                <th class="px-3 py-3 text-right">剩餘股數</th>
+                                <th class="px-3 py-3 text-right">平均成本</th>
+                                <th class="px-3 py-3 text-right">總投入成本</th>
+                                <th class="px-3 py-3 text-center">即時股價 ✏️</th>
+                                <th class="px-3 py-3 text-right">預估現值 (扣稅費)</th>
+                                <th class="px-3 py-3 text-right">未實現損益</th>
+                                <th class="px-3 py-3 text-right">報酬率</th>
                             </tr>
                         </thead>
-                        <tbody id="inventory-list" class="divide-y divide-slate-200">
-                            <!-- 庫存列表由 JS 動態生成 -->
-                        </tbody>
+                        <tbody id="inventory-list" class="divide-y divide-slate-200"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- Tab 3: History (Compact UI) -->
+        <!-- Tab 3: History -->
         <div id="tab-history" class="tab-content">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[75vh] sm:h-[82vh] print:h-auto print:border-none print:shadow-none print:overflow-visible">
-                
-                <!-- 控制區塊 -->
-                <div class="px-4 sm:px-6 py-3 border-b border-slate-200 flex flex-col xl:flex-row justify-between items-start xl:items-center bg-white gap-3 print:hidden">
-                    <h2 class="text-lg sm:text-xl font-black text-slate-800">完整交易明細與策略追蹤</h2>
-                    <div class="flex gap-2 items-center flex-wrap w-full xl:w-auto">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col h-[82vh] print:h-auto print:border-none print:shadow-none overflow-hidden">
+                <div class="px-4 py-3 border-b border-slate-200 flex flex-wrap justify-between items-center bg-white gap-3 print:hidden">
+                    <h2 class="text-lg font-black text-slate-800">完整交易明細與策略追蹤</h2>
+                    <div class="flex gap-2 flex-wrap w-full sm:w-auto">
                         <input type="file" id="import-file" accept=".csv" class="hidden">
-                        <button id="btn-import" class="flex-1 sm:flex-none justify-center text-xs sm:text-sm text-slate-700 hover:text-indigo-700 font-bold bg-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border-2 border-slate-200 shadow-sm transition-all hover:border-indigo-300 flex items-center gap-1 sm:gap-1.5">
-                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>匯入 CSV
-                        </button>
-                        <button id="btn-export" class="flex-1 sm:flex-none justify-center text-xs sm:text-sm text-slate-700 hover:text-indigo-700 font-bold bg-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border-2 border-slate-200 shadow-sm transition-all hover:border-indigo-300 flex items-center gap-1 sm:gap-1.5">
-                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>匯出 CSV
-                        </button>
-                        <button id="btn-print-pdf" class="flex-1 sm:flex-none justify-center text-xs sm:text-sm text-purple-700 hover:text-white hover:bg-purple-600 font-bold bg-purple-50 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border-2 border-purple-200 shadow-sm transition-all flex items-center gap-1 sm:gap-1.5" title="匯出當前畫面為 PDF">
-                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>輸出 PDF
-                        </button>
-                        <button id="btn-clear-all" class="flex-1 sm:flex-none justify-center text-xs sm:text-sm text-red-600 hover:text-white hover:bg-red-600 font-bold bg-red-50 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border-2 border-red-200 shadow-sm transition-all flex items-center gap-1 sm:gap-1.5">
-                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>清空紀錄
-                        </button>
+                        <button id="btn-import" class="flex-1 sm:flex-none text-xs text-slate-700 bg-white border-2 px-2 py-1.5 rounded-lg font-bold">匯入 CSV</button>
+                        <button id="btn-export" class="flex-1 sm:flex-none text-xs text-slate-700 bg-white border-2 px-2 py-1.5 rounded-lg font-bold">匯出 CSV</button>
+                        <button id="btn-print-pdf" class="flex-1 sm:flex-none text-xs text-purple-700 bg-purple-50 border-2 border-purple-200 px-2 py-1.5 rounded-lg font-bold">輸出 PDF</button>
+                        <button id="btn-clear-all" class="flex-1 sm:flex-none text-xs text-red-600 bg-red-50 border-2 border-red-200 px-2 py-1.5 rounded-lg font-bold">清空紀錄</button>
                     </div>
                 </div>
                 
-                <!-- 篩選區塊 -->
-                <div class="px-4 sm:px-6 py-2.5 border-b border-slate-200 bg-slate-50 flex flex-wrap gap-2 sm:gap-4 items-center print:hidden">
-                    <div class="flex items-center gap-2 flex-1 sm:flex-none">
-                        <label class="text-xs sm:text-sm font-black text-slate-700 whitespace-nowrap">篩選股票</label>
-                        <select id="filter-stock" onchange="render()" class="w-full sm:w-auto text-xs sm:text-sm font-bold border-2 border-slate-300 bg-white rounded-lg shadow-sm px-2 sm:px-3 py-1 sm:py-1.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-w-[120px] sm:min-w-[160px] outline-none">
-                            <option value="all">全部股票</option>
-                        </select>
+                <div class="px-4 py-2 border-b border-slate-200 bg-slate-50 flex gap-4 items-center print:hidden overflow-x-auto">
+                    <div class="flex items-center gap-2 whitespace-nowrap">
+                        <label class="text-xs font-black text-slate-700">篩選股票</label>
+                        <select id="filter-stock" onchange="render()" class="text-xs font-bold border-2 rounded-lg px-2 py-1 outline-none"><option value="all">全部股票</option></select>
                     </div>
-                    <div class="flex items-center gap-2 flex-1 sm:flex-none">
-                        <label class="text-xs sm:text-sm font-black text-slate-700 whitespace-nowrap">交易類別</label>
-                        <select id="filter-type" onchange="render()" class="w-full sm:w-auto text-xs sm:text-sm font-bold border-2 border-slate-300 bg-white rounded-lg shadow-sm px-2 sm:px-3 py-1 sm:py-1.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
-                            <option value="all">全部交易</option>
-                            <option value="buy">僅顯示買進</option>
-                            <option value="sell">僅顯示賣出</option>
+                    <div class="flex items-center gap-2 whitespace-nowrap">
+                        <label class="text-xs font-black text-slate-700">交易類別</label>
+                        <select id="filter-type" onchange="render()" class="text-xs font-bold border-2 rounded-lg px-2 py-1 outline-none">
+                            <option value="all">全部交易</option><option value="buy">僅顯示買進</option><option value="sell">僅顯示賣出</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- 報表專屬標題 (僅列印時顯示) -->
-                <div class="hidden print:block text-center py-4 mb-4 border-b-2 border-slate-800">
+                <div class="hidden print:block text-center py-4 mb-2 border-b-2 border-slate-800">
                     <h1 class="text-3xl font-black text-slate-900 mb-1">台股交易明細對帳單</h1>
                     <p class="text-slate-600 font-bold" id="print-date-range">產生日期：...</p>
                 </div>
 
-                <!-- 動態統計區塊 -->
-                <div id="stats-bar" class="px-4 sm:px-6 py-2 bg-indigo-50 border-b border-indigo-100 flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm font-black text-slate-800 shadow-inner">
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-indigo-800">顯示筆數</span>
-                        <span id="stat-count" class="bg-white px-2 py-0.5 rounded shadow-sm border border-indigo-200 text-indigo-700">0</span>
-                    </div>
-                    <div id="stat-buy-wrapper" class="flex items-center gap-1.5">
-                        <span class="text-slate-500">買進總額</span>
-                        <span id="stat-buy-total" class="bg-white px-2 py-0.5 rounded shadow-sm border border-slate-200">0</span>
-                    </div>
-                    <div id="stat-sell-wrapper" class="flex items-center gap-1.5">
-                        <span class="text-slate-500">賣出總額</span>
-                        <span id="stat-sell-total" class="bg-white px-2 py-0.5 rounded shadow-sm border border-slate-200">0</span>
-                    </div>
-                    <div id="stat-pnl-wrapper" class="flex items-center gap-1.5">
-                        <span class="text-indigo-800">此列表總盈虧</span>
-                        <span id="stat-total-pnl" class="bg-white px-2 py-0.5 rounded shadow-sm border border-indigo-200 text-lg">0</span>
-                    </div>
+                <div id="stats-bar" class="px-4 py-2 bg-indigo-50 border-b border-indigo-100 flex flex-wrap gap-4 text-xs font-black text-slate-800 shadow-inner">
+                    <div class="flex items-center gap-1.5 text-indigo-800">顯示筆數 <span id="stat-count" class="bg-white px-2 py-0.5 rounded border border-indigo-200 text-indigo-700">0</span></div>
+                    <div id="stat-buy-wrapper" class="flex items-center gap-1.5 text-slate-500">買進總額 <span id="stat-buy-total" class="bg-white px-2 py-0.5 rounded border border-slate-200">0</span></div>
+                    <div id="stat-sell-wrapper" class="flex items-center gap-1.5 text-slate-500">賣出總額 <span id="stat-sell-total" class="bg-white px-2 py-0.5 rounded border border-slate-200">0</span></div>
+                    <div id="stat-pnl-wrapper" class="flex items-center gap-1.5 text-indigo-800">此列表總盈虧 <span id="stat-total-pnl" class="bg-white px-2 py-0.5 rounded border border-indigo-200 text-base">0</span></div>
                 </div>
 
-                <!-- 表格主體 -->
                 <div class="overflow-x-auto custom-scrollbar flex-1 pb-2 print:overflow-visible" style="-webkit-overflow-scrolling: touch;">
-                    <table class="w-full text-left border-collapse min-w-[850px] sm:min-w-[1000px] print:min-w-full">
-                        <thead class="sticky top-0 bg-slate-800 text-white z-10 shadow-md print:static print:shadow-none print:bg-slate-200 print:text-slate-900">
-                            <tr class="text-[12px] sm:text-[14px] font-bold tracking-wider border-b print:border-slate-800">
-                                <th class="px-3 sm:px-6 py-2 sm:py-3 whitespace-nowrap w-[10%]">日期</th>
-                                <th class="px-3 sm:px-6 py-2 sm:py-3 whitespace-nowrap w-[15%]">股票</th>
-                                <th class="px-3 sm:px-6 py-2 sm:py-3 text-center whitespace-nowrap w-[8%]">類別</th>
-                                <th class="px-3 sm:px-6 py-2 sm:py-3 text-right whitespace-nowrap w-[20%]">單價 / 股數</th>
-                                <th class="px-3 sm:px-6 py-2 sm:py-3 text-right whitespace-nowrap w-[12%]">手續費 / 稅</th>
-                                <th class="px-3 sm:px-6 py-2 sm:py-3 text-right whitespace-nowrap w-[20%]">淨收付金額 (損益)</th>
-                                <th class="px-3 sm:px-6 py-2 sm:py-3 text-center whitespace-nowrap w-[15%] print:hidden">操作</th>
+                    <table class="w-full text-left border-collapse min-w-[850px] print:min-w-full">
+                        <thead class="sticky top-0 bg-slate-800 text-white z-10 print:static print:bg-slate-200 print:text-slate-900">
+                            <tr class="text-[13px] font-bold tracking-wider border-b">
+                                <th class="px-3 py-2 w-[10%]">日期</th>
+                                <th class="px-3 py-2 w-[15%]">股票</th>
+                                <th class="px-3 py-2 text-center w-[8%]">類別</th>
+                                <th class="px-3 py-2 text-right w-[20%]">單價 / 股數</th>
+                                <th class="px-3 py-2 text-right w-[12%]">手續費 / 稅</th>
+                                <th class="px-3 py-2 text-right w-[20%]">淨收付金額 (損益)</th>
+                                <th class="px-3 py-2 text-center w-[15%] print:hidden">操作</th>
                             </tr>
                         </thead>
-                        <tbody id="transaction-list" class="divide-y divide-slate-100 print:divide-slate-300">
-                            <!-- JS 動態生成 -->
-                        </tbody>
+                        <tbody id="transaction-list" class="divide-y divide-slate-100 print:divide-slate-300"></tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="confirm-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity print:hidden">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-100 transition-transform">
-            <div class="p-6 text-center">
-                <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4" id="modal-icon-container">
-                    <svg class="w-8 h-8 text-red-600" id="modal-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                </div>
+    <!-- 一般確認 Modal -->
+    <div id="confirm-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[60] p-4 transition-opacity print:hidden">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden text-center">
+            <div class="p-6">
                 <h3 class="text-xl font-black text-slate-900 mb-2" id="modal-title">確認操作</h3>
-                <p class="text-sm text-slate-500 font-medium" id="modal-message">確定要執行此操作嗎？</p>
+                <p class="text-sm text-slate-500 font-medium whitespace-pre-wrap" id="modal-message">確定要執行此操作嗎？</p>
             </div>
-            <div class="px-6 py-4 bg-slate-50 flex justify-center gap-3 border-t border-slate-100">
-                <button id="modal-cancel" class="px-4 py-2.5 bg-white border-2 border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 hover:border-slate-300 font-bold text-sm transition-colors w-full shadow-sm">
-                    取消
-                </button>
-                <button id="modal-confirm" class="px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 font-black text-sm transition-colors w-full shadow-sm focus:ring-4 focus:ring-red-200">
-                    確定
-                </button>
+            <div class="px-6 py-4 bg-slate-50 flex gap-3 border-t">
+                <button id="modal-cancel" class="px-4 py-2.5 bg-white border-2 text-slate-700 rounded-xl font-bold w-full">取消</button>
+                <button id="modal-confirm" class="px-4 py-2.5 bg-red-600 text-white rounded-xl font-black w-full">確定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ☁️ 雲端同步 Modal -->
+    <div id="sync-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity print:hidden">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[90vh]">
+            <div class="p-5 sm:p-6 overflow-y-auto custom-scrollbar">
+                <h3 class="text-xl font-black text-slate-900 mb-2 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                    GitHub 雲端同步
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-500 mb-5 font-bold leading-relaxed">
+                    透過你專屬的 GitHub 金鑰，在電腦與手機間一鍵互傳資料！告別傳送 CSV 的麻煩，資料 100% 安全隱密。
+                </p>
+                
+                <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200 mb-5">
+                    <div>
+                        <label class="block text-xs font-black text-slate-700 mb-1">1. GitHub Token (需勾選 gist 權限)</label>
+                        <input type="password" id="sync-token" placeholder="ghp_xxxxxxxxxxxx" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-mono">
+                        <a href="https://github.com/settings/tokens/new?scopes=gist&description=StockAppSync" target="_blank" class="text-[10px] text-indigo-600 hover:underline mt-1 inline-block font-bold">👉 點我產生免費 Token</a>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-slate-700 mb-1">2. 資料庫 Gist ID (跨裝置同步密碼)</label>
+                        <input type="text" id="sync-gist-id" placeholder="第一台裝置請留白，上傳後會自動產生" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-mono">
+                        <p class="text-[10px] text-slate-500 mt-1 font-bold">第一台裝置請直接按「上傳」。換到第二台裝置時，請把相同的 Token 跟自動產生的 ID 填入此處再按「下載」。</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="btn-sync-up" class="flex flex-col items-center justify-center bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 text-blue-700 rounded-xl p-3 sm:p-4 transition-all">
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        <span class="text-sm font-black">上傳至雲端</span>
+                        <span class="text-[10px] font-bold text-blue-500 mt-0.5">電腦備份專用</span>
+                    </button>
+                    <button id="btn-sync-down" class="flex flex-col items-center justify-center bg-green-50 hover:bg-green-100 border-2 border-green-200 text-green-700 rounded-xl p-3 sm:p-4 transition-all">
+                        <svg class="w-6 h-6 sm:w-8 sm:h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span class="text-sm font-black">從雲端下載</span>
+                        <span class="text-[10px] font-bold text-green-500 mt-0.5">手機同步專用</span>
+                    </button>
+                </div>
+            </div>
+            <div class="px-5 sm:px-6 py-3 bg-slate-100 border-t border-slate-200 flex justify-end">
+                <button onclick="closeSyncModal()" class="px-6 py-2 bg-white border-2 border-slate-300 text-slate-700 rounded-xl font-black text-sm w-full sm:w-auto">關閉視窗</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 狀態管理
         let transactions = JSON.parse(localStorage.getItem('stockTransactions')) || [];
         let livePrices = JSON.parse(localStorage.getItem('stockLivePrices')) || {};
+        const stockDict = {"2330":"台積電","2317":"鴻海","2454":"聯發科","2308":"台達電","2382":"廣達","2881":"富邦金","2882":"國泰金","2891":"中信金","2886":"兆豐金","3231":"緯創","2379":"瑞昱","3711":"日月光投控","3008":"大立光","2603":"長榮","2884":"玉山金","1301":"台塑","2357":"華碩","0050":"元大台灣50","0056":"元大高股息","00878":"國泰永續高股息","00919":"群益台灣精選高息","00929":"復華台灣科技優息"};
         
-        // 常見股票名稱對照表 (自動補齊與防呆用)
-        const stockDict = {
-            "2330": "台積電", "2317": "鴻海", "2454": "聯發科", "2308": "台達電",
-            "2382": "廣達", "2881": "富邦金", "2882": "國泰金", "2891": "中信金",
-            "2886": "兆豐金", "3231": "緯創", "2379": "瑞昱", "3711": "日月光投控",
-            "3008": "大立光", "2603": "長榮", "2884": "玉山金", "1301": "台塑",
-            "2357": "華碩", "0050": "元大台灣50", "0056": "元大高股息", "00878": "國泰永續高股息",
-            "00919": "群益台灣精選高息", "00929": "復華台灣科技優息"
-        };
-
-        const modal = document.getElementById('confirm-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalMessage = document.getElementById('modal-message');
-        const modalConfirm = document.getElementById('modal-confirm');
-        const modalCancel = document.getElementById('modal-cancel');
-        let confirmAction = null;
-
-        // 今日日期設定
-        document.getElementById('date').valueAsDate = new Date();
-
-        // 格式化功能
         const formatMoney = (num) => new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0 }).format(num);
         const formatPercent = (num) => (num > 0 ? '+' : '') + (num * 100).toFixed(2) + '%';
         
-        // 分層股票顯示 (防止斷行，支援代號與名稱分離)
+        // 上下分行不斷行排版
         const formatStockDisplayResponsive = (stockString) => {
             const spaceIdx = stockString.indexOf(' ');
             if (spaceIdx > -1) {
@@ -316,433 +286,285 @@
             return `<div class="whitespace-nowrap font-black text-slate-900 text-lg">${stockString}</div>`;
         };
 
-        // 分頁切換
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.querySelectorAll('[id^="tab-btn-"]').forEach(btn => {
-                btn.className = "flex-1 sm:flex-none px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900 hover:bg-slate-300/50 snap-center";
-            });
-            
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
-            activeBtn.className = "flex-1 sm:flex-none px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-black transition-all whitespace-nowrap bg-slate-800 text-white shadow-md snap-center";
-        }
-
-        // 對話框控制
+        // Modal 系統
+        const modal = document.getElementById('confirm-modal');
+        let confirmAction = null;
         function showModal(title, message, onConfirm = null) {
-            modalTitle.textContent = title;
-            modalMessage.textContent = message;
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
             confirmAction = onConfirm;
-            
+            const confirmBtn = document.getElementById('modal-confirm');
+            const cancelBtn = document.getElementById('modal-cancel');
             if (onConfirm === null) {
-                modalCancel.classList.add('hidden');
-                modalConfirm.textContent = '我知道了';
-                modalConfirm.className = "px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-black text-sm transition-colors w-full shadow-sm focus:ring-4 focus:ring-blue-200";
+                cancelBtn.classList.add('hidden');
+                confirmBtn.textContent = '我知道了';
+                confirmBtn.className = "px-4 py-2.5 bg-blue-600 text-white rounded-xl font-black w-full";
             } else {
-                modalCancel.classList.remove('hidden');
-                modalConfirm.textContent = '確定執行';
-                modalConfirm.className = "px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 font-black text-sm transition-colors w-full shadow-sm focus:ring-4 focus:ring-red-200";
+                cancelBtn.classList.remove('hidden');
+                confirmBtn.textContent = '確定執行';
+                confirmBtn.className = "px-4 py-2.5 bg-red-600 text-white rounded-xl font-black w-full";
             }
             modal.classList.remove('hidden');
         }
+        document.getElementById('modal-cancel').addEventListener('click', () => modal.classList.add('hidden'));
+        document.getElementById('modal-confirm').addEventListener('click', () => { if(confirmAction) confirmAction(); modal.classList.add('hidden'); });
 
-        modalCancel.addEventListener('click', () => modal.classList.add('hidden'));
-        modalConfirm.addEventListener('click', () => {
-            if (confirmAction) confirmAction();
-            modal.classList.add('hidden');
-        });
-
-        const stockInput = document.getElementById('stock');
-        const datalist = document.getElementById('stock-list');
-        
-        // 載入 Datalist
-        for (const [code, name] of Object.entries(stockDict)) {
-            const option = document.createElement('option');
-            option.value = `${code} ${name}`;
-            datalist.appendChild(option);
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('[id^="tab-btn-"]').forEach(btn => btn.className = "px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap text-slate-600 hover:text-slate-900 hover:bg-slate-300/50");
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            document.getElementById(`tab-btn-${tabId}`).className = "px-4 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-black transition-all whitespace-nowrap bg-slate-800 text-white shadow-md";
         }
 
-        // 失去焦點或按 Enter 時自動補齊名稱
-        stockInput.addEventListener('blur', processStockInput);
-        stockInput.addEventListener('keydown', (e) => {
-            if(e.key === 'Enter') {
-                e.preventDefault();
-                processStockInput();
-            }
-        });
-
+        document.getElementById('date').valueAsDate = new Date();
+        const stockInput = document.getElementById('stock');
+        const datalist = document.getElementById('stock-list');
+        for (const [code, name] of Object.entries(stockDict)) { datalist.appendChild(new Option(`${code} ${name}`)); }
+        
         function processStockInput() {
             let val = stockInput.value.trim();
             if(!val) return;
-            
-            // 如果輸入純數字且在字典裡
-            if (/^\d+$/.test(val) && stockDict[val]) {
-                stockInput.value = `${val} ${stockDict[val]}`;
-            } 
-            // 如果輸入純中文字且在字典裡 (反查)
+            if (/^\d+$/.test(val) && stockDict[val]) stockInput.value = `${val} ${stockDict[val]}`;
             else if (!/\d/.test(val)) {
                 for (const [code, name] of Object.entries(stockDict)) {
-                    if (name.includes(val)) {
-                        stockInput.value = `${code} ${name}`;
-                        break;
-                    }
+                    if (name.includes(val)) { stockInput.value = `${code} ${name}`; break; }
                 }
-            }
-            // 強制加上半形空白排版 (例如輸入 "2330台積電" 變 "2330 台積電")
-            else if (/^\d+[^\s\d]/.test(val)) {
-                stockInput.value = val.replace(/^(\d+)(.*)/, '$1 $2');
-            }
+            } else if (/^\d+[^\s\d]/.test(val)) stockInput.value = val.replace(/^(\d+)(.*)/, '$1 $2');
         }
+        stockInput.addEventListener('blur', processStockInput);
+        stockInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') { e.preventDefault(); processStockInput(); }});
 
         document.getElementById('transaction-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            processStockInput(); // 送出前確保排版正確
-            
+            processStockInput();
             const date = document.getElementById('date').value;
             const stock = document.getElementById('stock').value.trim();
             const type = document.getElementById('type').value;
             const price = parseFloat(document.getElementById('price').value);
             const shares = parseInt(document.getElementById('shares').value);
-            
             let discount = parseFloat(document.getElementById('discount-rate').value) || 0.28;
             
-            // 計算稅費 (新光證券邏輯)
-            let feeRate = 0.001425 * discount;
-            let rawFee = price * shares * feeRate;
-            let fee = 0;
-            if (shares < 1000) {
-                fee = Math.max(1, Math.floor(rawFee)); // 零股 1 元
-            } else {
-                fee = Math.max(20, Math.floor(rawFee)); // 整股 20 元
-            }
-            
+            let rawFee = price * shares * 0.001425 * discount;
+            let fee = shares < 1000 ? Math.max(1, Math.floor(rawFee)) : Math.max(20, Math.floor(rawFee)); // 新光1元邏輯
             let tax = type === 'sell' ? Math.floor(price * shares * 0.003) : 0;
             let grossAmount = price * shares;
             let netAmount = type === 'buy' ? (grossAmount + fee) : (grossAmount - fee - tax);
 
-            const tx = {
-                id: Date.now().toString(),
-                date, stock, type, price, shares, fee, tax, grossAmount, netAmount
-            };
-
-            transactions.unshift(tx);
+            transactions.unshift({ id: Date.now().toString(), date, stock, type, price, shares, fee, tax, grossAmount, netAmount });
             transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            // 賣出後重設表單，預設回買進
-            document.getElementById('price').value = '';
-            document.getElementById('shares').value = '';
-            document.getElementById('type').value = 'buy';
-            
+            document.getElementById('price').value = ''; document.getElementById('shares').value = ''; document.getElementById('type').value = 'buy';
             saveAndRender();
-            showModal('新增成功', `已成功記錄一筆 ${stock} 的${type==='buy'?'買進':'賣出'}資料！`);
+            showModal('新增成功', `已記錄 ${stock} 的${type==='buy'?'買進':'賣出'}資料！`);
         });
 
-        // 快速賣出特定批次
-        window.quickSellLot = function(stockName, remains) {
-            switchTab('dashboard');
-            document.getElementById('stock').value = stockName;
-            document.getElementById('type').value = 'sell';
-            document.getElementById('shares').value = remains;
-            document.getElementById('price').focus();
-        };
+        const syncTokenInput = document.getElementById('sync-token');
+        const syncGistIdInput = document.getElementById('sync-gist-id');
+        syncTokenInput.value = localStorage.getItem('githubToken') || '';
+        syncGistIdInput.value = localStorage.getItem('githubGistId') || '';
+        syncTokenInput.addEventListener('input', () => localStorage.setItem('githubToken', syncTokenInput.value.trim()));
+        syncGistIdInput.addEventListener('input', () => localStorage.setItem('githubGistId', syncGistIdInput.value.trim()));
 
-        // 刪除與清空
-        window.deleteTx = function(id) {
-            showModal('確認刪除', '這筆交易紀錄刪除後將無法復原，確定嗎？', () => {
-                transactions = transactions.filter(t => t.id !== id);
-                saveAndRender();
-            });
-        };
+        window.openSyncModal = () => document.getElementById('sync-modal').classList.remove('hidden');
+        window.closeSyncModal = () => document.getElementById('sync-modal').classList.add('hidden');
 
-        document.getElementById('btn-clear-all').addEventListener('click', () => {
-            if(transactions.length === 0) return;
-            showModal('清空所有資料', '這將會刪除您輸入的【所有】交易紀錄，且無法復原，確定嗎？', () => {
-                transactions = [];
-                saveAndRender();
+        document.getElementById('btn-sync-up').addEventListener('click', async () => {
+            const token = syncTokenInput.value.trim();
+            let gistId = syncGistIdInput.value.trim();
+            if(!token) return showModal('缺少 Token', '請先輸入 GitHub Token。');
+
+            const btn = document.getElementById('btn-sync-up');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="text-2xl mb-1 animate-spin">⏳</span><span class="text-sm font-black">處理中...</span>';
+
+            const payload = { files: { "stock_data.json": { content: JSON.stringify({ transactions, livePrices }) } } };
+
+            try {
+                if(!gistId) {
+                    payload.description = "台股記帳本雲端同步檔案 (請勿刪除)"; payload.public = false;
+                    const res = await fetch('https://api.github.com/gists', {
+                        method: 'POST', headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }, body: JSON.stringify(payload)
+                    });
+                    if(res.ok) {
+                        const data = await res.json(); gistId = data.id; syncGistIdInput.value = gistId; localStorage.setItem('githubGistId', gistId);
+                        showModal('備份庫建立成功', `已在 GitHub 建立專屬資料庫並上傳！\n\n【重要】請在手機上輸入相同的 Token，並填入以下 Gist ID 即可下載同步：\n\n${gistId}`);
+                    } else showModal('建立失敗', 'Token 可能無效或缺少 gist 權限。');
+                } else {
+                    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+                        method: 'PATCH', headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }, body: JSON.stringify(payload)
+                    });
+                    if(res.ok) showModal('上傳成功', '交易紀錄已成功備份至雲端！\n您現在可以到手機上點擊「從雲端下載」。');
+                    else showModal('更新失敗', 'Gist ID 錯誤或 Token 無效。');
+                }
+            } catch (e) { showModal('連線錯誤', '無法連接到 GitHub API。'); } finally { btn.innerHTML = originalHtml; }
+        });
+
+        document.getElementById('btn-sync-down').addEventListener('click', () => {
+            const token = syncTokenInput.value.trim(); const gistId = syncGistIdInput.value.trim();
+            if(!token || !gistId) return showModal('資料不全', '請確保 Token 與 Gist ID 皆已填寫。');
+
+            showModal('確認下載', '這將會「完全覆蓋」這台裝置上的紀錄，確定嗎？', async () => {
+                const btn = document.getElementById('btn-sync-down');
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<span class="text-2xl mb-1 animate-spin">⏳</span><span class="text-sm font-black">下載中...</span>';
+                try {
+                    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+                        method: 'GET', headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                    });
+                    if(res.ok) {
+                        const data = await res.json(); const content = data.files["stock_data.json"]?.content;
+                        if(content) {
+                            const parsed = JSON.parse(content); transactions = parsed.transactions || []; livePrices = parsed.livePrices || {};
+                            saveAndRender(); showModal('下載成功', '資料已成功與雲端同步！');
+                        } else showModal('格式錯誤', '找不到正確的資料檔案。');
+                    } else showModal('下載失敗', 'Gist ID 錯誤或 Token 無效。');
+                } catch (e) { showModal('連線錯誤', '無法連接到 GitHub API。'); } finally { btn.innerHTML = originalHtml; }
             });
         });
+
+        window.quickSellLot = function(stockName, remains) { switchTab('dashboard'); document.getElementById('stock').value = stockName; document.getElementById('type').value = 'sell'; document.getElementById('shares').value = remains; document.getElementById('price').focus(); };
+        window.deleteTx = function(id) { showModal('確認刪除', '紀錄刪除後無法復原，確定嗎？', () => { transactions = transactions.filter(t => t.id !== id); saveAndRender(); }); };
+        document.getElementById('btn-clear-all').addEventListener('click', () => { if(transactions.length===0) return; showModal('清空資料', '這將刪除【所有】紀錄且無法復原，確定嗎？', () => { transactions = []; saveAndRender(); }); });
+        document.getElementById('btn-print-pdf').addEventListener('click', () => { document.getElementById('print-date-range').textContent = `產生日期：${new Date().toLocaleDateString('zh-TW')}`; window.print(); });
 
         document.getElementById('btn-export').addEventListener('click', () => {
-            if (transactions.length === 0) return showModal('無法匯出', '目前沒有紀錄可以匯出。');
-            let csvContent = "\uFEFF系統ID,日期,股票代號/名稱,買賣類別,成交單價,成交股數,手續費,證交稅,總金額,淨收付金額\n";
-            transactions.forEach(tx => {
-                csvContent += `${tx.id},${tx.date},${tx.stock},${tx.type === 'buy' ? '買進' : '賣出'},${tx.price},${tx.shares},${tx.fee},${tx.tax},${tx.grossAmount},${tx.netAmount}\n`;
-            });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(new Blob([csvContent], { type: 'text/csv;charset=utf-8;' }));
-            link.download = `台股交易紀錄_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
+            if (transactions.length === 0) return showModal('無法匯出', '目前無紀錄。');
+            let csv = "\uFEFF系統ID,日期,股票代號/名稱,買賣類別,成交單價,成交股數,手續費,證交稅,總金額,淨收付金額\n";
+            transactions.forEach(t => csv += `${t.id},${t.date},${t.stock},${t.type==='buy'?'買進':'賣出'},${t.price},${t.shares},${t.fee},${t.tax},${t.grossAmount},${t.netAmount}\n`);
+            const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'})); link.download = `交易紀錄_${new Date().toISOString().split('T')[0]}.csv`; link.click();
         });
 
         document.getElementById('btn-import').addEventListener('click', () => document.getElementById('import-file').click());
         document.getElementById('import-file').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+            const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(event) {
-                const rows = event.target.result.split(/\r?\n/);
-                let count = 0, skip = 0;
+            reader.onload = function(ev) {
+                const rows = ev.target.result.split(/\r?\n/); let imported = 0, skipped = 0;
                 for (let i = 1; i < rows.length; i++) {
-                    const cols = rows[i].split(',');
-                    if (cols.length >= 6 && cols[1] && cols[2]) {
-                        const id = cols[0].trim() || Date.now().toString() + count;
+                    const c = rows[i].split(',');
+                    if (c.length >= 6 && c[1] && c[2]) {
+                        const id = c[0].trim() || Date.now().toString()+imported;
                         if (!transactions.some(t => t.id === id)) {
-                            transactions.push({
-                                id: id, date: cols[1], stock: cols[2], 
-                                type: cols[3].includes('買') ? 'buy' : 'sell',
-                                price: parseFloat(cols[4]), shares: parseInt(cols[5]),
-                                fee: parseFloat(cols[6]||0), tax: parseFloat(cols[7]||0),
-                                grossAmount: parseFloat(cols[8]||0), netAmount: parseFloat(cols[9]||0)
-                            });
-                            count++;
-                        } else skip++;
+                            transactions.push({ id, date: c[1], stock: c[2], type: c[3].includes('買')?'buy':'sell', price: parseFloat(c[4]), shares: parseInt(c[5]), fee: parseFloat(c[6]||0), tax: parseFloat(c[7]||0), grossAmount: parseFloat(c[8]||0), netAmount: parseFloat(c[9]||0) });
+                            imported++;
+                        } else skipped++;
                     }
                 }
-                transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-                saveAndRender();
-                showModal('匯入完成', `成功匯入 ${count} 筆，略過重複 ${skip} 筆。`);
-                e.target.value = '';
-            };
-            reader.readAsText(file);
+                transactions.sort((a, b) => new Date(b.date) - new Date(a.date)); saveAndRender(); showModal('匯入完成', `匯入 ${imported} 筆，略過重複 ${skipped} 筆。`); e.target.value = '';
+            }; reader.readAsText(file);
         });
 
-        document.getElementById('btn-print-pdf').addEventListener('click', () => {
-            document.getElementById('print-date-range').textContent = `產生日期：${new Date().toLocaleDateString('zh-TW')} | 共 ${document.getElementById('stat-count').textContent} 筆紀錄`;
-            window.print();
-        });
-
-        // 即時股價更新
-        window.updateManualPrice = function(stockName) {
-            const currentStr = livePrices[stockName] ? livePrices[stockName] : '';
-            const input = prompt(`請輸入 ${stockName} 的最新股價 (不輸入則清除預估):`, currentStr);
+        window.updateManualPrice = function(stock) {
+            const input = prompt(`輸入 ${stock} 最新股價:`, livePrices[stock] || '');
             if (input === null) return;
-            const val = parseFloat(input);
-            if (!isNaN(val) && val > 0) {
-                livePrices[stockName] = val;
-            } else {
-                delete livePrices[stockName];
-            }
+            const val = parseFloat(input); if (!isNaN(val) && val > 0) livePrices[stock] = val; else delete livePrices[stock];
             saveAndRender();
         };
 
-        function saveAndRender() {
-            localStorage.setItem('stockTransactions', JSON.stringify(transactions));
-            localStorage.setItem('stockLivePrices', JSON.stringify(livePrices));
-            render();
-        }
+        function saveAndRender() { localStorage.setItem('stockTransactions', JSON.stringify(transactions)); localStorage.setItem('stockLivePrices', JSON.stringify(livePrices)); render(); }
 
         function render() {
-            // 更新下拉選單
-            const filterStock = document.getElementById('filter-stock');
-            const currentVal = filterStock.value;
+            const filterStock = document.getElementById('filter-stock'); const currentStock = filterStock.value;
             const uniqueStocks = [...new Set(transactions.map(t => t.stock))].sort();
             filterStock.innerHTML = '<option value="all">全部股票</option>' + uniqueStocks.map(s => `<option value="${s}">${s}</option>`).join('');
-            if(uniqueStocks.includes(currentVal)) filterStock.value = currentVal;
+            if(uniqueStocks.includes(currentStock)) filterStock.value = currentStock;
             
-            const selectedStock = filterStock.value;
-            const selectedType = document.getElementById('filter-type').value;
+            const selStock = filterStock.value, selType = document.getElementById('filter-type').value;
+            let totalCost = 0, totalRealized = 0, totalUnrealized = 0, statCount = 0, statBuyTotal = 0, statSellTotal = 0, statRealizedPnl = 0;
+            const inv = {}, txPnLMap = {}, remainsMap = {}, sortedForCalc = [...transactions].sort((a, b) => new Date(a.date) - new Date(b.date));
 
-            // 運算基礎變數
-            let totalCost = 0, totalRealized = 0;
-            let statBuyTotal = 0, statSellTotal = 0, statRealizedPnl = 0, statCount = 0;
-            
-            const inventory = {};
-            const txPnLMap = {}; 
-            const remainsMap = {}; 
-            const sortedForCalc = [...transactions].sort((a, b) => new Date(a.date) - new Date(b.date));
-
-            // 第一階段：計算平均成本與已實現盈虧、批次追蹤
+            // 計算批次與成本
             sortedForCalc.forEach(tx => {
-                if (!inventory[tx.stock]) {
-                    inventory[tx.stock] = { shares: 0, totalCost: 0, avgPrice: 0, buyQueue: [] };
-                }
-                const inv = inventory[tx.stock];
-
+                if (!inv[tx.stock]) inv[tx.stock] = { shares: 0, totalCost: 0, avgPrice: 0, buyQueue: [] };
+                const sInv = inv[tx.stock];
                 if (tx.type === 'buy') {
-                    inv.shares += tx.shares;
-                    inv.totalCost += tx.netAmount;
-                    inv.avgPrice = inv.shares > 0 ? inv.totalCost / inv.shares : 0;
-                    totalCost += tx.netAmount;
-                    
-                    // 批次追蹤
-                    inv.buyQueue.push({ id: tx.id, sharesLeft: tx.shares, netAmount: tx.netAmount });
-                    remainsMap[tx.id] = tx.shares;
-
-                } else if (tx.type === 'sell') {
-                    const avgCostForSell = tx.shares * inv.avgPrice;
-                    const realizedPnL = tx.netAmount - avgCostForSell;
-                    totalRealized += realizedPnL;
-                    txPnLMap[tx.id] = realizedPnL;
-                    
-                    inv.shares -= tx.shares;
-                    inv.totalCost -= avgCostForSell;
-                    if (inv.shares <= 0) { inv.shares = 0; inv.totalCost = 0; inv.avgPrice = 0; }
-
-                    // 批次扣除邏輯
-                    let sharesToDeduct = tx.shares;
-                    for (let i = 0; i < inv.buyQueue.length && sharesToDeduct > 0; i++) {
-                        if (inv.buyQueue[i].sharesLeft > 0) {
-                            let deduct = Math.min(sharesToDeduct, inv.buyQueue[i].sharesLeft);
-                            inv.buyQueue[i].sharesLeft -= deduct;
-                            remainsMap[inv.buyQueue[i].id] = inv.buyQueue[i].sharesLeft;
-                            sharesToDeduct -= deduct;
-                        }
+                    sInv.shares += tx.shares; sInv.totalCost += tx.netAmount; sInv.avgPrice = sInv.totalCost / sInv.shares;
+                    totalCost += tx.netAmount; sInv.buyQueue.push({ id: tx.id, sharesLeft: tx.shares }); remainsMap[tx.id] = tx.shares;
+                } else {
+                    const avgCostForSell = tx.shares * sInv.avgPrice; const pnl = tx.netAmount - avgCostForSell;
+                    totalRealized += pnl; txPnLMap[tx.id] = pnl;
+                    sInv.shares -= tx.shares; sInv.totalCost -= avgCostForSell;
+                    if (sInv.shares <= 0) { sInv.shares = 0; sInv.totalCost = 0; sInv.avgPrice = 0; }
+                    let deduct = tx.shares;
+                    for (let i = 0; i < sInv.buyQueue.length && deduct > 0; i++) {
+                        let d = Math.min(deduct, sInv.buyQueue[i].sharesLeft);
+                        sInv.buyQueue[i].sharesLeft -= d; remainsMap[sInv.buyQueue[i].id] = sInv.buyQueue[i].sharesLeft; deduct -= d;
                     }
                 }
             });
 
-            // 概況面板數字
-            let totalUnrealized = 0;
-            let currentDiscount = parseFloat(document.getElementById('discount-rate').value) || 0.28;
-
-            const inventoryList = document.getElementById('inventory-list');
-            inventoryList.innerHTML = '';
-            
-            // 第二階段：渲染庫存與未實現損益
-            for (const [stock, data] of Object.entries(inventory)) {
+            // 渲染庫存
+            const invList = document.getElementById('inventory-list'); invList.innerHTML = '';
+            for (const [stock, data] of Object.entries(inv)) {
                 if (data.shares > 0) {
-                    let avgPrice = data.totalCost / data.shares;
-                    let estNetReturn = 0;
-                    let unrealizedPnL = 0;
-                    let roi = 0;
-
+                    let estRet = 0, unPnL = 0, roi = 0, avgPrice = data.totalCost / data.shares;
                     if (livePrices[stock]) {
-                        const price = livePrices[stock];
-                        let feeRate = 0.001425 * currentDiscount;
-                        let rawFee = price * data.shares * feeRate;
+                        const price = livePrices[stock], discount = parseFloat(document.getElementById('discount-rate').value) || 0.28;
+                        let rawFee = price * data.shares * 0.001425 * discount;
                         let fee = data.shares < 1000 ? Math.max(1, Math.floor(rawFee)) : Math.max(20, Math.floor(rawFee));
                         let tax = Math.floor(price * data.shares * 0.003);
-                        
-                        estNetReturn = (price * data.shares) - fee - tax;
-                        unrealizedPnL = estNetReturn - data.totalCost;
-                        roi = unrealizedPnL / data.totalCost;
-                        totalUnrealized += unrealizedPnL;
+                        estRet = (price * data.shares) - fee - tax; unPnL = estRet - data.totalCost; roi = unPnL / data.totalCost;
+                        totalUnrealized += unPnL;
                     }
-
-                    const pnlColor = unrealizedPnL > 0 ? 'text-red-600 font-black' : (unrealizedPnL < 0 ? 'text-green-600 font-black' : 'text-slate-700 font-black');
-                    const bgHighlight = unrealizedPnL > 0 ? 'bg-red-50/40' : (unrealizedPnL < 0 ? 'bg-green-50/40' : '');
-                    const priceDisplay = livePrices[stock] ? formatMoney(livePrices[stock]) : '點此輸入';
-
-                    inventoryList.innerHTML += `
-                        <tr class="hover:bg-slate-50 transition-colors border-b border-slate-200 ${bgHighlight}">
-                            <td class="px-3 sm:px-6 py-3 sm:py-4">${formatStockDisplayResponsive(stock)}</td>
-                            <td class="px-3 sm:px-6 py-3 sm:py-4 text-slate-800 text-right font-black whitespace-nowrap text-base sm:text-lg">${data.shares.toLocaleString()}</td>
-                            <td class="px-3 sm:px-6 py-3 sm:py-4 text-slate-800 text-right font-bold whitespace-nowrap text-sm sm:text-base">${formatMoney(avgPrice)}</td>
-                            <td class="px-3 sm:px-6 py-3 sm:py-4 text-slate-800 text-right font-black whitespace-nowrap text-sm sm:text-base">${formatMoney(data.totalCost)}</td>
-                            <td class="px-3 sm:px-6 py-3 sm:py-4 text-right">
-                                <button onclick="updateManualPrice('${stock}')" class="px-2 sm:px-4 py-1.5 sm:py-2 bg-white hover:bg-indigo-50 text-indigo-700 rounded-lg text-xs sm:text-[14px] transition-colors font-black border-2 border-indigo-200 shadow-sm whitespace-nowrap">
-                                    ${priceDisplay}
-                                </button>
-                            </td>
-                            <td class="px-3 sm:px-6 py-3 sm:py-4 text-slate-900 text-right font-black whitespace-nowrap text-sm sm:text-base">${formatMoney(estNetReturn)}</td>
-                            <td class="px-3 sm:px-6 py-3 sm:py-4 text-right ${pnlColor} text-base sm:text-lg whitespace-nowrap">${unrealizedPnL > 0 ? '+' : ''}${formatMoney(unrealizedPnL)}</td>
-                            <td class="px-3 sm:px-6 py-3 sm:py-4 text-right ${pnlColor} text-base sm:text-lg bg-white/60 rounded-r-lg whitespace-nowrap">${unrealizedPnL > 0 ? '+' : ''}${formatPercent(roi)}</td>
-                        </tr>
-                    `;
+                    const pnlColor = unPnL > 0 ? 'text-red-600' : (unPnL < 0 ? 'text-green-600' : 'text-slate-700');
+                    invList.innerHTML += `
+                        <tr class="hover:bg-slate-50 border-b border-slate-200">
+                            <td class="px-3 py-3">${formatStockDisplayResponsive(stock)}</td>
+                            <td class="px-3 py-3 text-right font-black text-lg">${data.shares.toLocaleString()}</td>
+                            <td class="px-3 py-3 text-right font-bold">${formatMoney(avgPrice)}</td>
+                            <td class="px-3 py-3 text-right font-black">${formatMoney(data.totalCost)}</td>
+                            <td class="px-3 py-3 text-center"><button onclick="updateManualPrice('${stock}')" class="px-3 py-1.5 bg-white text-indigo-700 rounded-lg text-sm font-black border-2 border-indigo-200 shadow-sm">${livePrices[stock]?formatMoney(livePrices[stock]):'點此輸入'}</button></td>
+                            <td class="px-3 py-3 text-right font-black">${formatMoney(estRet)}</td>
+                            <td class="px-3 py-3 text-right ${pnlColor} font-black text-lg">${unPnL>0?'+':''}${formatMoney(unPnL)}</td>
+                            <td class="px-3 py-3 text-right ${pnlColor} font-black text-lg">${unPnL>0?'+':''}${formatPercent(roi)}</td>
+                        </tr>`;
                 }
             }
-            if(inventoryList.innerHTML === '') {
-                inventoryList.innerHTML = '<tr><td colspan="8" class="text-center py-10 text-slate-500 font-bold">目前沒有持股庫存</td></tr>';
-            }
+            if(invList.innerHTML==='') invList.innerHTML = '<tr><td colspan="8" class="text-center py-10 text-slate-500 font-bold">無庫存</td></tr>';
 
-            // 更新面板數字
+            // 更新儀表板
             document.getElementById('summary-cost').textContent = formatMoney(totalCost);
-            document.getElementById('summary-realized').textContent = (totalRealized > 0 ? '+' : '') + formatMoney(totalRealized);
-            document.getElementById('summary-realized').className = `text-xl sm:text-3xl font-black truncate ${totalRealized > 0 ? 'text-red-600' : (totalRealized < 0 ? 'text-green-600' : 'text-slate-900')}`;
-            document.getElementById('summary-unrealized').textContent = (totalUnrealized > 0 ? '+' : '') + formatMoney(totalUnrealized);
-            document.getElementById('summary-unrealized').className = `text-2xl sm:text-3xl font-black truncate ${totalUnrealized > 0 ? 'text-red-600' : (totalUnrealized < 0 ? 'text-green-600' : 'text-slate-900')}`;
+            document.getElementById('summary-realized').textContent = (totalRealized>0?'+':'') + formatMoney(totalRealized);
+            document.getElementById('summary-realized').className = `text-xl sm:text-3xl font-black truncate ${totalRealized>0?'text-red-600':(totalRealized<0?'text-green-600':'text-slate-900')}`;
+            document.getElementById('summary-unrealized').textContent = (totalUnrealized>0?'+':'') + formatMoney(totalUnrealized);
+            document.getElementById('summary-unrealized').className = `text-2xl sm:text-3xl font-black truncate ${totalUnrealized>0?'text-red-600':(totalUnrealized<0?'text-green-600':'text-slate-900')}`;
             document.getElementById('summary-count').textContent = `${transactions.length} 筆`;
 
-            // 第三階段：渲染歷史明細與統計條
-            const list = document.getElementById('transaction-list');
-            list.innerHTML = '';
-            
+            // 渲染明細
+            const list = document.getElementById('transaction-list'); list.innerHTML = '';
             transactions.forEach(tx => {
-                if (selectedStock !== 'all' && tx.stock !== selectedStock) return;
-                if (selectedType !== 'all' && tx.type !== selectedType) return;
+                if (selStock !== 'all' && tx.stock !== selStock) return;
+                if (selType !== 'all' && tx.type !== selType) return;
+                statCount++; if(tx.type === 'buy') statBuyTotal += tx.netAmount; else { statSellTotal += tx.netAmount; statRealizedPnl += (txPnLMap[tx.id]||0); }
                 
-                statCount++;
-                if(tx.type === 'buy') statBuyTotal += tx.netAmount;
-                if(tx.type === 'sell') {
-                    statSellTotal += tx.netAmount;
-                    statRealizedPnl += (txPnLMap[tx.id] || 0);
-                }
-
-                const isBuy = tx.type === 'buy';
-                const typeLabel = isBuy ? '買進' : '賣出';
-                const typeColor = isBuy ? 'text-blue-700 bg-blue-50 border-blue-200' : 'text-orange-700 bg-orange-50 border-orange-200';
-                const prefix = isBuy ? '-' : '+';
-                const amountColor = isBuy ? 'text-green-600' : 'text-red-600';
-
-                let pnlHtml = '', remainsHtml = '', sellBtnHtml = '';
-                if (isBuy) {
-                    const remains = remainsMap[tx.id] || 0;
-                    if (remains > 0) {
-                        remainsHtml = `<div class="text-[10px] sm:text-[12px] text-blue-700 mt-1 font-black bg-blue-50 inline-block px-1.5 sm:px-2 py-0.5 rounded border border-blue-200 print:border-2">未賣出 ${remains.toLocaleString()} 股</div>`;
-                        sellBtnHtml = `<button onclick="quickSellLot('${tx.stock}', ${remains})" class="text-blue-700 hover:text-white hover:bg-blue-600 transition-colors px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-white border border-blue-300 shadow-sm flex-shrink-0 whitespace-nowrap text-xs sm:text-sm font-black">賣出此筆</button>`;
-                    } else {
-                        remainsHtml = `<div class="text-[10px] sm:text-[12px] text-slate-500 mt-1 bg-slate-100 inline-block px-1.5 sm:px-2 py-0.5 rounded border border-slate-300 font-bold print:border-2">已全數沖銷</div>`;
-                    }
+                const isBuy = tx.type === 'buy', pnl = txPnLMap[tx.id]||0, remains = remainsMap[tx.id]||0;
+                let subHtml = '', btnHtml = '';
+                if(isBuy) {
+                    subHtml = remains > 0 ? `<div class="text-[11px] text-blue-700 mt-1 font-black bg-blue-50 inline-block px-1.5 py-0.5 rounded border border-blue-200">未賣出 ${remains} 股</div>` : `<div class="text-[11px] text-slate-500 mt-1 bg-slate-100 inline-block px-1.5 py-0.5 rounded border border-slate-300 font-bold">已沖銷</div>`;
+                    if(remains>0) btnHtml = `<button onclick="quickSellLot('${tx.stock}', ${remains})" class="text-blue-700 bg-white border border-blue-300 px-2 py-1 rounded-lg text-xs font-black shadow-sm">賣出此筆</button>`;
                 } else {
-                    const pnl = txPnLMap[tx.id] || 0;
-                    const pnlColorClass = pnl > 0 ? 'text-red-600 bg-red-50 border-red-200' : (pnl < 0 ? 'text-green-600 bg-green-50 border-green-200' : 'text-slate-700 bg-slate-100 border-slate-300');
-                    pnlHtml = `<div class="text-[11px] sm:text-[13px] mt-1 sm:mt-1.5 font-black inline-block px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md border ${pnlColorClass} shadow-sm print:border-2">盈虧 ${pnl > 0 ? '+' : ''}${formatMoney(pnl)}</div>`;
+                    subHtml = `<div class="text-[12px] mt-1.5 font-black inline-block px-2 py-0.5 rounded border ${pnl>0?'text-red-600 border-red-200 bg-red-50':(pnl<0?'text-green-600 border-green-200 bg-green-50':'')}">盈虧 ${pnl>0?'+':''}${formatMoney(pnl)}</div>`;
                 }
 
                 list.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 print:border-slate-300 print:break-inside-avoid">
-                        <td class="px-3 sm:px-6 py-2 sm:py-3 text-slate-700 text-xs sm:text-sm whitespace-nowrap font-bold">${tx.date}</td>
-                        <td class="px-3 sm:px-6 py-2 sm:py-3">${formatStockDisplayResponsive(tx.stock)}</td>
-                        <td class="px-3 sm:px-6 py-2 sm:py-3 text-center">
-                            <span class="px-2 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-black border ${typeColor} whitespace-nowrap print:border-2">${typeLabel}</span>
-                        </td>
-                        <td class="px-3 sm:px-6 py-2 sm:py-3 text-slate-800 text-right whitespace-nowrap">
-                            <div class="font-black text-base sm:text-lg">$${tx.price}</div>
-                            <div class="text-xs sm:text-sm text-slate-500 mt-0.5 font-bold">${tx.shares.toLocaleString()} 股</div>
-                            ${remainsHtml}
-                        </td>
-                        <td class="px-3 sm:px-6 py-2 sm:py-3 text-slate-600 text-xs sm:text-sm text-right font-bold whitespace-nowrap">
-                            <div>費: $${Math.round(tx.fee).toLocaleString()}</div>
-                            ${!isBuy ? `<div class="mt-0.5 text-slate-500">稅: $${Math.round(tx.tax).toLocaleString()}</div>` : ''}
-                        </td>
-                        <td class="px-3 sm:px-6 py-2 sm:py-3 font-black ${amountColor} text-right whitespace-nowrap">
-                            <div class="text-lg sm:text-xl">${prefix}${formatMoney(tx.netAmount)}</div>
-                            ${pnlHtml}
-                        </td>
-                        <td class="px-3 sm:px-6 py-2 sm:py-3 text-center whitespace-nowrap print:hidden">
-                            <div class="flex items-center justify-center gap-1.5 sm:gap-2">
-                                ${sellBtnHtml}
-                                <button onclick="deleteTx('${tx.id}')" class="text-slate-400 hover:text-red-600 transition-colors p-1.5 sm:p-2 rounded-lg hover:bg-red-50" title="刪除紀錄">
-                                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
+                    <tr class="hover:bg-slate-50 border-b border-slate-100">
+                        <td class="px-3 py-2 text-xs font-bold text-slate-600">${tx.date}</td>
+                        <td class="px-3 py-2">${formatStockDisplayResponsive(tx.stock)}</td>
+                        <td class="px-3 py-2 text-center"><span class="px-3 py-1 rounded-full text-xs font-black ${isBuy?'bg-blue-50 text-blue-700 border-blue-200':'bg-orange-50 text-orange-700 border-orange-200'} border">${isBuy?'買進':'賣出'}</span></td>
+                        <td class="px-3 py-2 text-right"><div class="font-black text-base">$${tx.price}</div><div class="text-xs text-slate-500 font-bold">${tx.shares} 股</div>${isBuy?subHtml:''}</td>
+                        <td class="px-3 py-2 text-right text-xs font-bold text-slate-500"><div>費: $${Math.round(tx.fee)}</div>${!isBuy?`<div>稅: $${Math.round(tx.tax)}</div>`:''}</td>
+                        <td class="px-3 py-2 text-right font-black ${isBuy?'text-green-600':'text-red-600'}"><div class="text-lg">${isBuy?'-':'+'}${formatMoney(tx.netAmount)}</div>${!isBuy?subHtml:''}</td>
+                        <td class="px-3 py-2 text-center print:hidden"><div class="flex items-center justify-center gap-2">${btnHtml}<button onclick="deleteTx('${tx.id}')" class="text-slate-400 hover:text-red-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div></td>
+                    </tr>`;
             });
+            if(statCount===0) list.innerHTML = '<tr><td colspan="7" class="text-center py-10 text-slate-500 font-bold">無紀錄</td></tr>';
 
-            if(statCount === 0) {
-                list.innerHTML = '<tr><td colspan="7" class="text-center py-10 text-slate-500 font-bold">沒有符合條件的紀錄</td></tr>';
-            }
-
-            // 更新統計條數字
-            document.getElementById('stat-count').textContent = statCount;
-            document.getElementById('stat-buy-total').textContent = formatMoney(statBuyTotal);
-            document.getElementById('stat-sell-total').textContent = formatMoney(statSellTotal);
-            
-            const pnlEl = document.getElementById('stat-total-pnl');
-            pnlEl.textContent = (statRealizedPnl > 0 ? '+' : '') + formatMoney(statRealizedPnl);
-            pnlEl.className = `bg-white px-2 py-0.5 rounded shadow-sm border text-lg ${statRealizedPnl > 0 ? 'text-red-600 border-red-200' : (statRealizedPnl < 0 ? 'text-green-600 border-green-200' : 'text-slate-700 border-slate-200')}`;
-
-            // 根據篩選隱藏不需要的統計
-            document.getElementById('stat-buy-wrapper').style.display = selectedType === 'sell' ? 'none' : 'flex';
-            document.getElementById('stat-sell-wrapper').style.display = selectedType === 'buy' ? 'none' : 'flex';
-            document.getElementById('stat-pnl-wrapper').style.display = selectedType === 'buy' ? 'none' : 'flex';
+            document.getElementById('stat-count').textContent = statCount; document.getElementById('stat-buy-total').textContent = formatMoney(statBuyTotal); document.getElementById('stat-sell-total').textContent = formatMoney(statSellTotal);
+            const pnlEl = document.getElementById('stat-total-pnl'); pnlEl.textContent = (statRealizedPnl>0?'+':'') + formatMoney(statRealizedPnl);
+            pnlEl.className = `bg-white px-2 py-0.5 rounded border text-base ${statRealizedPnl>0?'text-red-600 border-red-200':(statRealizedPnl<0?'text-green-600 border-green-200':'')}`;
+            document.getElementById('stat-buy-wrapper').style.display = selType === 'sell' ? 'none' : 'flex';
+            document.getElementById('stat-sell-wrapper').style.display = selType === 'buy' ? 'none' : 'flex';
+            document.getElementById('stat-pnl-wrapper').style.display = selType === 'buy' ? 'none' : 'flex';
         }
-
-        // 初始化渲染
         render();
     </script>
 </body>
